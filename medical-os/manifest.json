@@ -1,0 +1,11 @@
+{
+  "name": "Medical OS — Training & Study Tracker",
+  "short_name": "Medical OS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#0F4C81",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [{"src":"icons/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
