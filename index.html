@@ -1,0 +1,3111 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F4C81">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>MEDICAL OS</title>
+<style>
+:root{
+  --primary:#0F4C81;--primary-600:#0d4373;--primary-50:#e8f0f7;
+  --secondary:#14B8A6;--accent:#D4AF37;
+  --bg:#F7F9FC;--surface:#fff;--surface-2:#F1F5F9;--border:#E2E8F0;
+  --text:#0F172A;--muted:#64748B;--muted-2:#94A3B8;
+  --success:#16A34A;--danger:#DC2626;--warning:#F59E0B;
+  --ring-bg:#E2E8F0;
+  --radius:16px;--shadow:0 4px 14px rgba(15,23,42,.07);
+  --shadow-lg:0 20px 40px rgba(15,23,42,.12);
+  --bottom-h:66px;--sidebar-w:250px;
+  --font:"Segoe UI",Tahoma,system-ui,sans-serif;
+}
+[data-theme="dark"]{
+  --bg:#0B1220;--surface:#111B2E;--surface-2:#182338;--border:#1F2A44;
+  --text:#E6EEF7;--muted:#94A3B8;--primary-50:#0e2540;--ring-bg:#1F2A44;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);
+  line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:6px}
+
+#app{display:flex;min-height:100dvh}
+.sidebar{display:none;width:var(--sidebar-w);background:var(--surface);
+  border-left:1px solid var(--border);padding:16px 10px;position:sticky;
+  top:0;height:100dvh;overflow-y:auto;flex-shrink:0}
+.main{flex:1;min-width:0;padding-bottom:calc(var(--bottom-h) + 12px);
+  display:flex;flex-direction:column}
+.topbar{position:sticky;top:0;z-index:30;background:var(--bg);
+  padding:12px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px}
+.view{padding:14px;max-width:1100px;width:100%;margin:0 auto}
+.loading-screen{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px;text-align:center}
+.loading-screen .brand-logo{margin:0 auto 14px;width:52px;height:52px}
+
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 14px}
+.brand-logo{width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--primary),var(--secondary));
+  display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px}
+.brand-txt b{display:block;font-size:14px}
+.brand-txt span{font-size:10.5px;color:var(--muted)}
+
+.nav-group h4{font-size:10px;font-weight:700;color:var(--muted-2);
+  text-transform:uppercase;letter-spacing:.06em;padding:10px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;
+  border-radius:9px;color:var(--muted);font-weight:600;font-size:13.5px;
+  width:100%;text-align:right;transition:.15s}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.active{background:var(--primary-50);color:var(--primary)}
+
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:40;
+  height:calc(var(--bottom-h) + env(safe-area-inset-bottom));
+  padding-bottom:env(safe-area-inset-bottom);background:var(--surface);
+  border-top:1px solid var(--border);display:grid;grid-template-columns:repeat(5,1fr)}
+.bn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;color:var(--muted-2);font-size:10px;font-weight:600;padding:6px 2px}
+.bn-item.active{color:var(--primary)}
+.bn-item .ic{font-size:20px;line-height:1}
+
+.fab{position:fixed;left:16px;
+  bottom:calc(var(--bottom-h) + env(safe-area-inset-bottom) + 14px);
+  z-index:45;width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--primary),var(--primary-600));
+  color:#fff;font-size:26px;font-weight:300;
+  box-shadow:0 8px 20px rgba(15,76,129,.45);display:grid;place-items:center}
+.fab:active{transform:scale(.94)}
+
+.card{background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:12px}
+.card-head{display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:10px}
+.card-head h3{font-size:14.5px;font-weight:700}
+
+.hero{background:linear-gradient(135deg,#0F4C81,#0a3d68 60%,#0e2a4a);
+  color:#fff;border-radius:22px;padding:18px;position:relative;
+  overflow:hidden;margin-bottom:14px;box-shadow:0 12px 28px rgba(15,76,129,.3)}
+.hero::after{content:"";position:absolute;inset:auto -40px -60px auto;
+  width:180px;height:180px;border-radius:50%;
+  background:radial-gradient(circle,rgba(20,184,166,.4),transparent 70%)}
+.hero .hello{font-size:12.5px;opacity:.9}
+.hero .date{font-size:11px;opacity:.7;margin-top:2px}
+.hero-row{display:flex;align-items:center;gap:14px;margin-top:12px;position:relative;z-index:1}
+.hero-score{font-size:38px;font-weight:800;line-height:1}
+.hero-score small{font-size:14px;opacity:.7}
+.hero-streak{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);
+  padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:700}
+.hero-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.75}
+
+.grid{display:grid;gap:10px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+.grid-4{grid-template-columns:repeat(2,1fr)}
+@media(min-width:640px){.grid-4{grid-template-columns:repeat(4,1fr)}}
+
+.stat{background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:11px;display:flex;flex-direction:column;gap:3px}
+.stat .label{font-size:10.5px;color:var(--muted);font-weight:600}
+.stat .value{font-size:20px;font-weight:800;line-height:1.1}
+.stat .sub{font-size:10.5px;color:var(--muted-2)}
+
+.qa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.qa{background:var(--surface);border:1px solid var(--border);border-radius:13px;
+  padding:10px 4px;display:flex;flex-direction:column;align-items:center;gap:5px;
+  font-size:10.5px;font-weight:600;color:var(--text);box-shadow:var(--shadow)}
+.qa:hover{border-color:var(--primary);color:var(--primary)}
+.qa-ic{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  font-size:17px;background:var(--primary-50);color:var(--primary)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 14px;border-radius:11px;font-weight:700;font-size:13px;
+  border:1px solid transparent;transition:.15s}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:var(--primary-600)}
+.btn-soft{background:var(--primary-50);color:var(--primary)}
+.btn-outline{background:transparent;border-color:var(--border);color:var(--text)}
+.btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted)}
+.btn-block{width:100%}
+.btn-sm{padding:6px 10px;font-size:11.5px;border-radius:9px}
+.btn:active{transform:scale(.97)}
+
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;
+  border-radius:999px;font-size:11px;font-weight:600;
+  background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}
+.chip.blue{background:rgba(15,76,129,.1);color:var(--primary);border-color:rgba(15,76,129,.25)}
+.chip.green{background:rgba(22,163,74,.1);color:var(--success);border-color:rgba(22,163,74,.25)}
+.chip.red{background:rgba(220,38,38,.1);color:var(--danger);border-color:rgba(220,38,38,.25)}
+.chip.gold{background:rgba(212,175,55,.15);color:#8a6d1a;border-color:rgba(212,175,55,.4)}
+
+.bar{height:8px;border-radius:999px;background:var(--ring-bg);overflow:hidden}
+.bar > i{display:block;height:100%;border-radius:999px;
+  background:linear-gradient(90deg,var(--primary),var(--secondary));
+  transition:width .5s ease}
+
+.ring circle{transition:stroke-dashoffset .6s ease}
+
+.list{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;align-items:center;gap:10px;padding:11px;border-radius:12px;
+  background:var(--surface);border:1px solid var(--border)}
+.row .r-main{flex:1;min-width:0}
+.row .r-title{font-weight:700;font-size:13.5px}
+.row .r-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.row .r-ic{width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  display:grid;place-items:center;background:var(--primary-50);color:var(--primary);font-size:17px}
+.row .r-actions{display:flex;gap:5px}
+
+.fld{display:block;margin-bottom:11px}
+.fld > span{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;padding:10px 11px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface-2);color:var(--text);
+  font-size:13.5px;outline:none;transition:.15s}
+.fld input:focus,.fld select:focus,.fld textarea:focus{
+  border-color:var(--primary);background:var(--surface);
+  box-shadow:0 0 0 3px rgba(15,76,129,.1)}
+.fld textarea{resize:vertical;min-height:70px}
+.fld-row{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fld-range output{background:var(--primary-50);color:var(--primary);
+  font-weight:700;padding:1px 7px;border-radius:6px;font-size:11.5px;margin-right:5px}
+input[type=range]{accent-color:var(--primary);width:100%}
+
+.backdrop{position:fixed;inset:0;background:rgba(2,6,23,.55);
+  z-index:90;animation:fade .15s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:100;
+  background:var(--surface);border-radius:20px 20px 0 0;
+  max-height:92dvh;overflow:hidden;display:flex;flex-direction:column;
+  animation:slideUp .25s ease;padding-bottom:env(safe-area-inset-bottom)}
+.sheet-head{padding:12px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between}
+.sheet-head h3{font-size:14.5px}
+.sheet-head .close{width:32px;height:32px;border-radius:50%;
+  background:var(--surface-2);display:grid;place-items:center;font-size:18px}
+.sheet-body{padding:14px 16px;overflow-y:auto;flex:1}
+.sheet-foot{padding:10px 16px;border-top:1px solid var(--border);
+  display:flex;gap:8px;background:var(--surface)}
+.sheet-foot .btn{flex:1}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@media(min-width:768px){
+  .sheet{left:auto;right:20px;bottom:20px;width:500px;border-radius:18px;max-height:85dvh}
+}
+
+.toast{position:fixed;left:50%;bottom:calc(var(--bottom-h) + 20px);
+  transform:translateX(-50%);z-index:200;background:#0F172A;color:#fff;
+  padding:10px 14px;border-radius:11px;font-size:12.5px;font-weight:600;
+  max-width:90vw;box-shadow:var(--shadow-lg);animation:toastIn .2s}
+[data-theme="dark"] .toast{background:#1e293b;border:1px solid var(--border)}
+@keyframes toastIn{from{transform:translate(-50%,8px);opacity:0}}
+
+.empty{text-align:center;padding:28px 14px;color:var(--muted)}
+.empty .ic{font-size:30px;margin-bottom:6px;opacity:.6}
+.empty h4{color:var(--text);font-size:13.5px;margin-bottom:3px}
+.empty p{font-size:12px;margin-bottom:12px}
+
+.tabs{display:flex;gap:3px;background:var(--surface-2);padding:3px;
+  border-radius:11px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:max-content;padding:7px 12px;border-radius:8px;
+  font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.tab.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow)}
+
+.insight{display:flex;gap:10px;padding:10px;border-radius:11px;
+  background:var(--surface-2);border:1px solid var(--border);margin-bottom:7px}
+.insight .ic{font-size:18px;flex-shrink:0}
+.insight p{font-size:12.5px;line-height:1.5}
+
+.tl{position:relative;padding-right:18px}
+.tl::before{content:"";position:absolute;right:5px;top:6px;bottom:6px;
+  width:2px;background:var(--border)}
+.tl-item{position:relative;padding:7px 0;font-size:13px}
+.tl-item::before{content:"";position:absolute;right:-17px;top:12px;
+  width:9px;height:9px;border-radius:50%;background:var(--primary);
+  border:2px solid var(--bg)}
+
+.muted{color:var(--muted)}.small{font-size:12px}.tiny{font-size:11px}
+.bold{font-weight:700}.center{text-align:center}
+.mt-8{margin-top:8px}.mt-12{margin-top:12px}.mt-16{margin-top:16px}
+.mb-8{margin-bottom:8px}.mb-12{margin-bottom:12px}
+.flex{display:flex}.between{justify-content:space-between}
+.between-center{justify-content:space-between;align-items:center}
+.items-center{align-items:center}.gap-6{gap:6px}.gap-10{gap:10px}
+.hidden{display:none !important}
+
+@media(min-width:1024px){
+  .sidebar{display:block}
+  .bottomnav{display:none}
+  .main{padding-bottom:20px}
+  .fab{bottom:20px;left:auto;right:calc(var(--sidebar-w) + 20px)}
+  .view{padding:18px}
+  .toast{bottom:20px}
+}
+@media print{
+  .sidebar,.bottomnav,.fab,.topbar,.tabs,.qa-grid,.btn{display:none !important}
+  body{background:#fff;color:#000}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <main class="main">
+    <header id="topbar" class="topbar"></header>
+    <section id="view" class="view"></section>
+  </main>
+  <nav id="bottomnav" class="bottomnav"></nav>
+  <button id="fab" class="fab" aria-label="إضافة سريعة">+</button>
+</div>
+
+<div id="backdrop" class="backdrop" hidden></div>
+<aside id="sheet" class="sheet" hidden></aside>
+<div id="toast" class="toast" hidden></div>
+<div id="loading" class="loading-screen"><div><div class="brand-logo">M</div><b>Loading Medical OS...</b><p class="muted small mt-8">جارٍ فتح قاعدة بياناتك المحلية</p></div></div>
+
+<!-- Optional local Chart.js: copy chart.umd.min.js to lib/ for offline charts. -->
+<script src="lib/chart.umd.min.js" onerror="window.__noChart=1"></script>
+
+<script>
+'use strict';
+
+/* ============================================================
+   CONSTANTS
+============================================================ */
+const STORAGE_KEY='medicalos.v1';
+const SPECIALTIES=['Cardiology','Respiratory','Gastroenterology','Neurology','Nephrology',
+'Endocrinology','Hematology','Infectious Disease','Rheumatology','Emergency Medicine',
+'Surgery','Pediatrics','Obstetrics & Gynecology','Psychiatry','Dermatology','ENT',
+'Ophthalmology','Urology','Orthopedics','Anesthesia','ICU'];
+
+const SKILL_PRESETS=[
+['IV Cannulation','Procedures',50],['Venipuncture','Procedures',50],
+['IM Injection','Procedures',30],['SC Injection','Procedures',20],
+['ECG','Diagnostics',50],['ABG Sampling','Procedures',30],
+['Urinary Catheterization','Procedures',25],['NG Tube','Procedures',20],
+['Airway Management','Emergency',15],['Suturing','Procedures',40],
+['Wound Dressing','Procedures',50],['Blood Sampling','Procedures',50],
+['Blood Culture','Procedures',20],['Foley Catheter','Procedures',25],
+['CPR','Emergency',10],['BLS','Emergency',5],['ACLS','Emergency',5],
+['Oxygen Therapy','Respiratory',30],['Nebulization','Respiratory',30],
+['Glucose Measurement','Diagnostics',50],['Vital Signs','Basic',100],
+['History Taking','Examination',50],['CVS Examination','Examination',40],
+['Respiratory Examination','Examination',40],['Abdominal Examination','Examination',40],
+['Neurological Examination','Examination',30],['PV Examination','Examination',20]
+];
+
+const SETTINGS_TYPES=['ER','Ward','ICU','OPD','OR','Clinic','Other'];
+const DIFFICULTY=['Easy','Moderate','Difficult'];
+const CASE_STATUS=['Observed','Assisted','Performed','Managed'];
+const PEARL_SOURCES=['Consultant','Book','Guideline','Case','Lecture','Other'];
+const PEARL_IMPORTANCE=['Low','Medium','High'];
+const RESEARCH_TYPES=['Systematic Review','Meta-analysis','Original Research','Narrative Review','Case Report','Database Study'];
+const RESEARCH_STATUS=['Idea','Searching','Screening','Extraction','Analysis','Writing','Submitted','Published'];
+const TASK_CATEGORIES=['Study','Clinical','Reading','Research','Workout','Qbank','Revision','Other'];
+const PRIORITIES=['Low','Medium','High'];
+const VIDEO_STATUS=['Not Started','In Progress','Completed'];
+const BOOK_TYPES=['Exam','Clinical','Reference','Guidelines','Articles','Reading','Other'];
+
+/* ============================================================
+   UTILS
+============================================================ */
+const $=(s,el=document)=>el.querySelector(s);
+const $$=(s,el=document)=>[...el.querySelectorAll(s)];
+const uid=()=>crypto?.randomUUID?.()||`m-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,10)}`;
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const todayISO=()=>{const d=new Date();d.setHours(0,0,0,0);return d.toISOString().slice(0,10)};
+const isoOf=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x.toISOString().slice(0,10)};
+const parseISO=s=>{const d=new Date(s+'T00:00:00');return isNaN(d)?null:d};
+const fmtDate=s=>{const d=parseISO(s);return d?d.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'}):'—'};
+const fmtDateShort=s=>{const d=parseISO(s);return d?d.toLocaleDateString('ar-EG',{day:'numeric',month:'short'}):'—'};
+const fmtDayName=s=>{const d=parseISO(s);return d?d.toLocaleDateString('ar-EG',{weekday:'long'}):''};
+const addDays=(iso,n)=>{const d=parseISO(iso);d.setDate(d.getDate()+n);return isoOf(d)};
+const startOfWeek=(iso=todayISO())=>{const d=parseISO(iso);const dow=d.getDay();
+  const diff=(dow+1)%7;d.setDate(d.getDate()-diff);return isoOf(d)};
+const endOfWeek=(iso=todayISO())=>addDays(startOfWeek(iso),6);
+const startOfMonth=(iso=todayISO())=>iso.slice(0,7)+'-01';
+const endOfMonth=(iso=todayISO())=>{const d=parseISO(iso);
+  const last=new Date(d.getFullYear(),d.getMonth()+1,0);return isoOf(last)};
+const withinRange=(iso,a,b)=>iso>=a&&iso<=b;
+const daysBetween=(a,b)=>{const d1=parseISO(a),d2=parseISO(b);
+  return(!d1||!d2)?0:Math.round((d2-d1)/86400000)};
+const sum=(arr,f=x=>x)=>arr.reduce((a,b)=>a+(Number(f(b))||0),0);
+const avg=(arr,f=x=>x)=>arr.length?sum(arr,f)/arr.length:0;
+const pct=(v,m)=>m>0?Math.min(100,Math.round((v/m)*100)):0;
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+const num=(v,d=0)=>{const n=parseFloat(v);return isNaN(n)?d:n};
+const int=(v,d=0)=>{const n=parseInt(v,10);return isNaN(n)?d:n};
+const sortBy=(arr,k,d='desc')=>[...arr].sort((a,b)=>{const av=k(a),bv=k(b);
+  if(av<bv)return d==='asc'?-1:1;if(av>bv)return d==='asc'?1:-1;return 0});
+
+const download=(name,content,mime='application/json')=>{
+  const blob=content instanceof Blob?content:new Blob([content],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+};
+
+/* ============================================================
+   STORE — in-memory UI cache backed by IndexedDB
+   The synchronous API preserves the existing views; every mutation is
+   immediately queued to IndexedDB, the durable source of truth.
+============================================================ */
+const Store={
+  data:null,
+  collections:['skills','skillSessions','cases','pearls','courses','videos','books',
+    'readingSessions','questionBanks','questionSessions','researchProjects','notes',
+    'tasks','goals'],
+  db:null, lastSave:null, migrationRan:false,
+  defaults(){
+    const now=new Date().toISOString();
+    return{
+      version:'1.0.0',createdAt:now,updatedAt:now,
+      settings:{
+        theme:'light',
+        profile:{name:'',targetExam:'MRCP'},
+        targets:{questions:50,pages:20,videos:1,clinical:1,studyMinutes:120,researchMinutes:30},
+        weights:{clinical:30,study:25,questions:20,reading:15,research:10}
+      },
+      skills:[],skillSessions:[],cases:[],pearls:[],
+      courses:[],videos:[],books:[],readingSessions:[],
+      questionBanks:[],questionSessions:[],
+      researchProjects:[],notes:[],tasks:[],goals:[]
+    };
+  },
+  async load(){
+    try{
+      this.db=await this.openDB();
+      const hasData=await this.hasData();
+      if(!hasData) await this.migrateLegacy();
+      const def=this.defaults(); const loaded={...def};
+      for(const c of this.collections) loaded[c]=await this.all(c);
+      const settings=await this.getRecord('settings','app');
+      loaded.settings={...def.settings,...(settings?.value||{})};
+      const meta=await this.getRecord('metadata','app');
+      loaded.createdAt=meta?.createdAt||def.createdAt; loaded.updatedAt=meta?.updatedAt||def.updatedAt;
+      this.data=loaded;
+      if(!hasData && !this.migrationRan) await this.persistAll();
+      this.lastSave=loaded.updatedAt;
+    }catch(e){ console.error('IndexedDB load failed',e); this.data=this.defaults(); toast('تعذر فتح قاعدة البيانات المحلية','error'); }
+  },
+  openDB(){return new Promise((resolve,reject)=>{const req=indexedDB.open('medicalOS',2);req.onupgradeneeded=()=>{const db=req.result;[...this.collections,'settings','metadata'].forEach(n=>{if(!db.objectStoreNames.contains(n))db.createObjectStore(n,{keyPath:'id'})})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})},
+  tx(names,mode='readonly'){return this.db.transaction(names,mode)},
+  request(req){return new Promise((resolve,reject)=>{req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})},
+  async all(name){return this.request(this.tx(name).objectStore(name).getAll())},
+  async getRecord(name,id){return this.request(this.tx(name).objectStore(name).get(id))},
+  async hasData(){const meta=await this.getRecord('metadata','app'); return !!meta},
+  async migrateLegacy(){
+    const raw=localStorage.getItem(STORAGE_KEY); if(!raw)return;
+    try{const legacy=JSON.parse(raw); if(!legacy||typeof legacy!=='object')return; this.data={...this.defaults(),...legacy,settings:{...this.defaults().settings,...(legacy.settings||{})}}; this.collections.forEach(c=>{if(!Array.isArray(this.data[c]))this.data[c]=[]}); await this.persistAll(); this.migrationRan=true; toast('تم نقل بياناتك القديمة بأمان','success');}
+    catch(e){console.warn('Legacy migration failed',e);toast('تعذر نقل البيانات القديمة','error')}
+  },
+  save(){this.data.updatedAt=new Date().toISOString();this.lastSave=this.data.updatedAt;this.persistAll().catch(e=>{console.error(e);toast('لم يتم حفظ البيانات. حاول مرة أخرى.','error')})},
+  async persistAll(){if(!this.db)return;const t=this.tx([...this.collections,'settings','metadata'],'readwrite');for(const c of this.collections){const s=t.objectStore(c);s.clear();(this.data[c]||[]).forEach(x=>s.put({...x,id:x.id||uid(),updatedAt:x.updatedAt||new Date().toISOString()}))}t.objectStore('settings').put({id:'app',value:this.data.settings,updatedAt:new Date().toISOString()});t.objectStore('metadata').put({id:'app',schemaVersion:2,createdAt:this.data.createdAt,updatedAt:this.data.updatedAt});await new Promise((resolve,reject)=>{t.oncomplete=resolve;t.onerror=()=>reject(t.error)})},
+  write(col,record){if(!this.db)return;const t=this.tx([col,'metadata'],'readwrite');t.objectStore(col).put(record);t.objectStore('metadata').put({id:'app',schemaVersion:2,createdAt:this.data.createdAt,updatedAt:record.updatedAt||new Date().toISOString()});t.onerror=()=>toast('لم يتم حفظ البيانات. حاول مرة أخرى.','error')},
+  erase(col,id){if(!this.db)return;const now=new Date().toISOString(),t=this.tx([col,'metadata'],'readwrite');t.objectStore(col).delete(id);t.objectStore('metadata').put({id:'app',schemaVersion:2,createdAt:this.data.createdAt,updatedAt:now});this.lastSave=now;t.onerror=()=>toast('لم يتم حفظ البيانات. حاول مرة أخرى.','error')},
+  get(k){return this.data[k]},
+  add(col,item){
+    const now=new Date().toISOString(),rec={id:uid(),createdAt:now,updatedAt:now,...item};
+    this.data[col].unshift(rec);this.write(col,rec);this.lastSave=now;return rec;
+  },
+  update(col,id,patch){
+    const i=this.data[col].findIndex(x=>x.id===id);
+    if(i<0)return null;
+    this.data[col][i]={...this.data[col][i],...patch,updatedAt:new Date().toISOString()};
+    this.write(col,this.data[col][i]);this.lastSave=this.data[col][i].updatedAt;return this.data[col][i];
+  },
+  remove(col,id){
+    const before=this.data[col].length;
+    this.data[col]=this.data[col].filter(x=>x.id!==id);
+    if(this.data[col].length<before)this.erase(col,id);return this.data[col].length<before;
+  },
+  find(col,id){return this.data[col].find(x=>x.id===id)}
+};
+
+/* ============================================================
+   UI PRIMITIVES
+============================================================ */
+let toastTimer;
+function toast(msg,kind='info'){
+  const el=$('#toast');el.hidden=false;el.textContent=msg;
+  el.style.background=kind==='error'?'#DC2626':kind==='success'?'#16A34A':
+    kind==='warn'?'#F59E0B':'#0F172A';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},2400);
+}
+
+let sheetOnSubmit=null;
+function openSheet({title,bodyHTML,submitLabel='حفظ',onSubmit,hideSubmit=false}){
+  sheetOnSubmit=onSubmit||null;
+  const sheet=$('#sheet');
+  $('#backdrop').hidden=false;sheet.hidden=false;
+  sheet.innerHTML=`
+    <div class="sheet-head">
+      <h3>${esc(title)}</h3>
+      <button class="close" data-sheet-close>×</button>
+    </div>
+    <form id="sheet-form" novalidate>
+      <div class="sheet-body">${bodyHTML}</div>
+      ${hideSubmit?'':`<div class="sheet-foot">
+        <button type="button" class="btn btn-outline" data-sheet-close>إلغاء</button>
+        <button type="submit" class="btn btn-primary">${esc(submitLabel)}</button>
+      </div>`}
+    </form>`;
+  document.body.style.overflow='hidden';
+  const first=sheet.querySelector('input,select,textarea');
+  if(first)setTimeout(()=>first.focus(),100);
+}
+function closeSheet(){
+  const sheet=$('#sheet');
+  sheet.hidden=true;sheet.innerHTML='';
+  $('#backdrop').hidden=true;
+  document.body.style.overflow='';sheetOnSubmit=null;
+}
+
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-sheet-close]')||e.target.id==='backdrop')closeSheet();
+});
+document.addEventListener('submit',e=>{
+  if(e.target.id==='sheet-form'){
+    e.preventDefault();
+    if(!sheetOnSubmit)return closeSheet();
+    const fd=Object.fromEntries(new FormData(e.target).entries());
+    const res=sheetOnSubmit(fd,e.target);
+    if(res!==false)closeSheet();
+  }
+});
+
+/* ---------- Form builder ---------- */
+function field(f,val){
+  const v=val??f.value??'';
+  const req=f.required?'required':'';
+  const ph=f.placeholder?`placeholder="${esc(f.placeholder)}"`:'';
+  switch(f.type){
+    case 'textarea':
+      return `<label class="fld"><span>${esc(f.label)}</span>
+        <textarea name="${f.name}" ${req} rows="${f.rows||3}" ${ph}>${esc(v)}</textarea></label>`;
+    case 'select':{
+      const opts=(f.options||[]).map(o=>{
+        const value=Array.isArray(o)?o[0]:o;
+        const label=Array.isArray(o)?o[1]:o;
+        return `<option value="${esc(value)}" ${value==v?'selected':''}>${esc(label)}</option>`;
+      }).join('');
+      return `<label class="fld"><span>${esc(f.label)}</span>
+        <select name="${f.name}" ${req}>${opts}</select></label>`;
+    }
+    case 'number':
+      return `<label class="fld"><span>${esc(f.label)}</span>
+        <input type="number" name="${f.name}" ${req} value="${esc(v)}"
+          min="${f.min??''}" max="${f.max??''}" step="${f.step??'1'}" ${ph}></label>`;
+    case 'date':
+      return `<label class="fld"><span>${esc(f.label)}</span>
+        <input type="date" name="${f.name}" ${req} value="${esc(v||todayISO())}"></label>`;
+    case 'range':
+      return `<label class="fld"><span>${esc(f.label)} <output>${v||f.value||3}</output></span>
+        <input type="range" name="${f.name}" min="${f.min||1}" max="${f.max||5}" step="1"
+          value="${v||f.value||3}"
+          oninput="this.parentElement.querySelector('output').textContent=this.value"></label>`;
+    default:
+      return `<label class="fld"><span>${esc(f.label)}</span>
+        <input type="${f.type||'text'}" name="${f.name}" ${req} value="${esc(v)}" ${ph}></label>`;
+  }
+}
+function formHTML(schema,values={}){
+  let html='',i=0;
+  while(i<schema.length){
+    const f=schema[i];
+    if(f.half&&schema[i+1]?.half){
+      html+=`<div class="fld-row">${field(f,values[f.name])}${field(schema[i+1],values[schema[i+1].name])}</div>`;
+      i+=2;
+    } else {html+=field(f,values[f.name]);i++}
+  }
+  return html;
+}
+
+/* ============================================================
+   CALCULATIONS
+============================================================ */
+const Calc={
+  skillAttempts(id){return sum(Store.get('skillSessions').filter(s=>s.skillId===id),s=>s.count||1)},
+  totalSkillAttempts(){return sum(Store.get('skillSessions'),s=>s.count||1)},
+  skillAttemptsIn(a,b){return sum(Store.get('skillSessions').filter(s=>withinRange(s.date,a,b)),s=>s.count||1)},
+  casesIn(a,b){return Store.get('cases').filter(c=>withinRange(c.date,a,b))},
+  questionsIn(a,b){
+    const s=Store.get('questionSessions').filter(x=>withinRange(x.date,a,b));
+    const total=sum(s,x=>x.count);
+    const correct=sum(s,x=>x.correct);
+    return{total,correct,wrong:total-correct,sessions:s,
+      accuracy:total?Math.round((correct/total)*100):0};
+  },
+  pagesIn(a,b){return sum(Store.get('readingSessions').filter(x=>withinRange(x.date,a,b)),x=>x.pages)},
+  videosIn(a,b){
+    return Store.get('videos').filter(v=>v.completedAt&&withinRange(v.completedAt.slice(0,10),a,b)).length;
+  },
+  researchMinutesIn(a,b){
+    return sum(Store.get('researchProjects').flatMap(p=>p.sessions||[])
+      .filter(s=>withinRange(s.date,a,b)),s=>s.minutes);
+  },
+  streak(){
+    const all=new Set();
+    Store.get('skillSessions').forEach(s=>s.date&&all.add(s.date));
+    Store.get('questionSessions').forEach(s=>s.date&&all.add(s.date));
+    Store.get('readingSessions').forEach(s=>s.date&&all.add(s.date));
+    Store.get('cases').forEach(c=>c.date&&all.add(c.date));
+    Store.get('tasks').filter(t=>t.done&&t.date).forEach(t=>all.add(t.date));
+    if(!all.size)return{current:0,best:0};
+    const days=[...all].sort();
+    let best=1,cur=1;
+    for(let i=1;i<days.length;i++){
+      if(daysBetween(days[i-1],days[i])===1)cur++;else cur=1;
+      if(cur>best)best=cur;
+    }
+    let current=0;
+    let cursor=todayISO();
+    if(!all.has(cursor))cursor=addDays(cursor,-1);
+    while(all.has(cursor)){current++;cursor=addDays(cursor,-1)}
+    return{current,best};
+  },
+  subScores(){
+    const s=startOfWeek(),e=endOfWeek();
+    const t=Store.get('settings').targets;
+    const clinical=pct(this.skillAttemptsIn(s,e),(t.clinical||1)*7);
+    const studyMin=sum(Store.get('readingSessions').filter(r=>withinRange(r.date,s,e)),r=>r.duration||0)
+      +sum(Store.get('questionSessions').filter(q=>withinRange(q.date,s,e)),q=>q.duration||0);
+    const study=pct(studyMin,(t.studyMinutes||120)*7);
+    const q=this.questionsIn(s,e);
+    const questions=pct(q.total,(t.questions||50)*7);
+    const pages=this.pagesIn(s,e);
+    const reading=pct(pages,(t.pages||20)*7);
+    const rm=this.researchMinutesIn(s,e);
+    const research=pct(rm,(t.researchMinutes||30)*7);
+    return{clinical,study,questions,reading,research};
+  },
+  progressScore(){
+    const w=Store.get('settings').weights;
+    const s=this.subScores();
+    const total=Object.values(w).reduce((a,b)=>a+b,0)||1;
+    const val=Object.keys(w).reduce((acc,k)=>acc+(s[k]||0)*(w[k]||0),0)/total;
+    return{score:Math.round(val),parts:s};
+  },
+  todayStats(){
+    const d=todayISO();
+    return{
+      skills:this.skillAttemptsIn(d,d),
+      cases:this.casesIn(d,d).length,
+      questions:this.questionsIn(d,d),
+      pages:this.pagesIn(d,d),
+      videos:this.videosIn(d,d),
+      research:this.researchMinutesIn(d,d)
+    };
+  },
+  weekStats(){
+    const s=startOfWeek(),e=endOfWeek();
+    return{
+      skills:this.skillAttemptsIn(s,e),
+      cases:this.casesIn(s,e).length,
+      questions:this.questionsIn(s,e),
+      pages:this.pagesIn(s,e),
+      videos:this.videosIn(s,e),
+      research:this.researchMinutesIn(s,e)
+    };
+  },
+  lastWeekStats(){
+    const s=addDays(startOfWeek(),-7),e=addDays(endOfWeek(),-7);
+    return{
+      skills:this.skillAttemptsIn(s,e),
+      cases:this.casesIn(s,e).length,
+      questions:this.questionsIn(s,e),
+      pages:this.pagesIn(s,e),
+      videos:this.videosIn(s,e),
+      research:this.researchMinutesIn(s,e)
+    };
+  },
+  monthStats(){
+    const s=startOfMonth(),e=endOfMonth();
+    return{
+      skills:this.skillAttemptsIn(s,e),
+      cases:this.casesIn(s,e).length,
+      questions:this.questionsIn(s,e),
+      pages:this.pagesIn(s,e),
+      videos:this.videosIn(s,e),
+      research:this.researchMinutesIn(s,e)
+    };
+  },
+  topSkills(limit=5){
+    return Store.get('skills')
+      .map(s=>({skill:s,attempts:this.skillAttempts(s.id)}))
+      .sort((a,b)=>b.attempts-a.attempts).slice(0,limit);
+  },
+  topSpecialties(limit=6){
+    const counts={};
+    Store.get('cases').forEach(c=>{counts[c.specialty]=(counts[c.specialty]||0)+1});
+    return Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,limit)
+      .map(([name,count])=>({name,count}));
+  },
+  weakestSpecialties(limit=3){
+    const stats={};
+    Store.get('questionSessions').forEach(s=>{
+      const t=s.topic||'General';
+      if(!stats[t])stats[t]={correct:0,total:0};
+      stats[t].correct+=s.correct||0;
+      stats[t].total+=s.count||0;
+    });
+    return Object.entries(stats).filter(([,v])=>v.total>=5)
+      .map(([topic,v])=>({topic,accuracy:Math.round((v.correct/v.total)*100),total:v.total}))
+      .sort((a,b)=>a.accuracy-b.accuracy).slice(0,limit);
+  },
+  estimateBookCompletion(book){
+    const sessions=Store.get('readingSessions').filter(r=>r.bookId===book.id);
+    if(!sessions.length)return null;
+    const recent=sessions.filter(r=>r.date>=addDays(todayISO(),-14));
+    const a=avg(recent,r=>r.pages)||avg(sessions,r=>r.pages);
+    if(!a)return null;
+    const remaining=Math.max(0,(book.totalPages||0)-(book.currentPage||0));
+    const days=Math.ceil(remaining/a);
+    return addDays(todayISO(),days);
+  },
+  goalProgress(g){
+    const period=g.period||'monthly';
+    const start=period==='daily'?todayISO():period==='weekly'?startOfWeek():startOfMonth();
+    const end=period==='daily'?todayISO():period==='weekly'?endOfWeek():endOfMonth();
+    const map={
+      questions:()=>this.questionsIn(start,end).total,
+      pages:()=>this.pagesIn(start,end),
+      skills:()=>this.skillAttemptsIn(start,end),
+      cases:()=>this.casesIn(start,end).length,
+      videos:()=>this.videosIn(start,end)
+    };
+    return{current:map[g.metric]?map[g.metric]():0};
+  }
+};
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+const App={route:'dashboard',params:{}};
+function navigate(route,params={}){App.route=route;App.params=params||{};render()}
+
+function render(){
+  renderTopbar();renderSidebar();renderBottomNav();
+  const v=Views[App.route]||Views.dashboard;
+  const el=$('#view');
+  el.innerHTML=v.render();
+  if(v.mount)setTimeout(()=>v.mount(),0);
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+function renderTopbar(){
+  const v=Views[App.route];
+  const title=v?v.title:'MEDICAL OS';
+  $('#topbar').innerHTML=`
+    <div style="flex:1">
+      <div class="tiny muted">MEDICAL OS</div>
+      <div style="font-weight:800;font-size:15px">${esc(title)}</div>
+    </div>
+    <button class="btn btn-soft btn-sm" data-action="toggle-theme">
+      ${Store.get('settings').theme==='dark'?'☀️':'🌙'}
+    </button>`;
+}
+
+const NAV_SIDEBAR=[
+  {group:'الرئيسية'},
+  {id:'dashboard',label:'لوحة التحكم',icon:'🏠'},
+  {group:'التدريب السريري'},
+  {id:'clinical',label:'Clinical Training',icon:'💉'},
+  {group:'الدراسة'},
+  {id:'study',label:'Exam Preparation',icon:'📚'},
+  {id:'reading',label:'Medical Reading',icon:'📖'},
+  {id:'research',label:'Research',icon:'🔬'},
+  {group:'المعرفة'},
+  {id:'library',label:'Knowledge Base',icon:'📝'},
+  {id:'planner',label:'Planner',icon:'🗓️'},
+  {group:'التحليل'},
+  {id:'analytics',label:'Analytics',icon:'📊'},
+  {id:'reports',label:'Reports',icon:'📄'},
+  {group:'النظام'},
+  {id:'settings',label:'Settings',icon:'⚙️'}
+];
+function renderSidebar(){
+  const active=App.route;
+  let html=`<div class="brand">
+    <div class="brand-logo">M</div>
+    <div class="brand-txt"><b>MEDICAL OS</b><span>Personal Tracker</span></div>
+  </div>`;
+  NAV_SIDEBAR.forEach(item=>{
+    if(item.group){
+      html+=`<div class="nav-group"><h4>${esc(item.group)}</h4></div>`;
+    } else {
+      const act=active===item.id;
+      html+=`<button class="nav-item ${act?'active':''}" data-nav="${item.id}">
+        <span style="font-size:16px">${item.icon}</span><span>${esc(item.label)}</span>
+      </button>`;
+    }
+  });
+  $('#sidebar').innerHTML=html;
+}
+
+const NAV_BOTTOM=[
+  {id:'dashboard',label:'الرئيسية',icon:'🏠'},
+  {id:'clinical',label:'سريري',icon:'💉'},
+  {id:'study',label:'دراسة',icon:'📚'},
+  {id:'analytics',label:'تحليل',icon:'📊'},
+  {id:'settings',label:'إعدادات',icon:'⚙️'}
+];
+function renderBottomNav(){
+  const active=App.route;
+  $('#bottomnav').innerHTML=NAV_BOTTOM.map(item=>`
+    <button class="bn-item ${active===item.id?'active':''}" data-nav="${item.id}">
+      <span class="ic">${item.icon}</span><span>${esc(item.label)}</span>
+    </button>`).join('');
+}
+
+/* ---------- Shared helpers ---------- */
+function ring(p,size=64,stroke=6,color='var(--primary)'){
+  const r=(size-stroke)/2;
+  const c=2*Math.PI*r;
+  const off=c*(1-clamp(p,0,100)/100);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="ring">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="var(--ring-bg)" stroke-width="${stroke}" fill="none"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" stroke="${color}" stroke-width="${stroke}" fill="none"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}"
+      transform="rotate(-90 ${size/2} ${size/2})"/>
+    <text x="50%" y="50%" text-anchor="middle" dy=".35em"
+      fill="var(--text)" font-size="13" font-weight="800">${Math.round(p)}%</text>
+  </svg>`;
+}
+function progressBar(p){
+  return `<div class="bar"><i style="width:${clamp(p,0,100)}%"></i></div>`;
+}
+function hero(score,streak){
+  const name=Store.get('settings').profile?.name||'Doctor';
+  const d=new Date();
+  const dateStr=d.toLocaleDateString('ar-EG',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const hour=d.getHours();
+  const greeting=hour<12?'صباح الخير':'مساء الخير';
+  return `<div class="hero">
+    <div class="hello">${greeting}، ${esc(name)} 👋</div>
+    <div class="date">${esc(dateStr)}</div>
+    <div class="hero-row">
+      <div>
+        <div class="hero-label">Medical Progress</div>
+        <div class="hero-score">${score}<small>/100</small></div>
+      </div>
+      <div style="margin-inline-start:auto;text-align:left">
+        <div class="hero-streak">🔥 ${streak.current} يوم</div>
+        <div class="tiny" style="opacity:.7;margin-top:5px">أفضل: ${streak.best}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ============================================================
+   VIEWS
+============================================================ */
+const Views={};
+
+/* ---------- DASHBOARD ---------- */
+Views.dashboard={
+  title:'لوحة التحكم',
+  render(){
+    const ps=Calc.progressScore();
+    const streak=Calc.streak();
+    const today=Calc.todayStats();
+    const week=Calc.weekStats();
+    const lastWeek=Calc.lastWeekStats();
+    const t=Store.get('settings').targets;
+
+    const dailyPct=Math.round((
+      pct(today.questions.total,t.questions)+
+      pct(today.pages,t.pages)+
+      pct(today.videos,t.videos)+
+      pct(today.skills,t.clinical)
+    )/4);
+
+    const insights=[];
+    const qChange=lastWeek.questions.total
+      ?Math.round(((week.questions.total-lastWeek.questions.total)/lastWeek.questions.total)*100):0;
+    if(lastWeek.questions.total&&qChange!==0){
+      insights.push(`<div class="insight"><div class="ic">${qChange>0?'📈':'📉'}</div><p>${
+        qChange>0?`أداء الأسئلة هذا الأسبوع <b>+${qChange}%</b> مقارنة بالماضي.`
+                 :`انخفضت أسئلة هذا الأسبوع <b>${qChange}%</b>.`}</p></div>`);
+    }
+    if(week.questions.accuracy){
+      insights.push(`<div class="insight"><div class="ic">🎯</div><p>متوسط دقة الأسئلة: <b>${week.questions.accuracy}%</b>.</p></div>`);
+    }
+    const weak=Calc.weakestSpecialties(1)[0];
+    if(weak)insights.push(`<div class="insight"><div class="ic">⚠️</div><p>أضعف مجال: <b>${esc(weak.topic)}</b> (دقة ${weak.accuracy}%).</p></div>`);
+    if(streak.current>=3)insights.push(`<div class="insight"><div class="ic">🔥</div><p>سلسلة <b>${streak.current}</b> أيام متتالية!</p></div>`);
+    if(!insights.length)insights.push(`<div class="insight"><div class="ic">✨</div><p>ابدأ بتسجيل نشاطك اليومي لتظهر الرؤى.</p></div>`);
+
+    return `
+      ${hero(ps.score,streak)}
+      <div class="card">
+        <div class="card-head"><h3>إنجاز اليوم</h3><span class="chip blue">${dailyPct}%</span></div>
+        ${progressBar(dailyPct)}
+        <div class="grid grid-2 mt-12">
+          <div class="stat"><span class="label">أسئلة</span>
+            <span class="value">${today.questions.total}<small class="muted small"> / ${t.questions}</small></span>
+            <span class="sub">دقة ${today.questions.accuracy}%</span></div>
+          <div class="stat"><span class="label">صفحات</span>
+            <span class="value">${today.pages}<small class="muted small"> / ${t.pages}</small></span></div>
+          <div class="stat"><span class="label">مهارات</span>
+            <span class="value">${today.skills}<small class="muted small"> / ${t.clinical}</small></span></div>
+          <div class="stat"><span class="label">فيديو</span>
+            <span class="value">${today.videos}<small class="muted small"> / ${t.videos}</small></span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>إجراءات سريعة</h3></div>
+        <div class="qa-grid">
+          <button class="qa" data-action="quick-add" data-kind="skill-session"><div class="qa-ic">💉</div><span>مهارة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="case"><div class="qa-ic">🩺</div><span>حالة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="questions"><div class="qa-ic">❓</div><span>أسئلة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="reading"><div class="qa-ic">📖</div><span>قراءة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="video"><div class="qa-ic">🎬</div><span>فيديو</span></button>
+          <button class="qa" data-action="quick-add" data-kind="pearl"><div class="qa-ic">💎</div><span>تركة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="note"><div class="qa-ic">📝</div><span>ملاحظة</span></button>
+          <button class="qa" data-action="quick-add" data-kind="task"><div class="qa-ic">✅</div><span>مهمة</span></button>
+        </div>
+      </div>
+
+      ${renderTodayPlan()}
+
+      <div class="card">
+        <div class="card-head"><h3>هذا الأسبوع</h3>
+          <button class="btn btn-ghost btn-sm" data-nav="analytics">التفاصيل</button></div>
+        <div class="grid grid-4">
+          <div class="stat"><span class="label">أسئلة</span><span class="value">${week.questions.total}</span></div>
+          <div class="stat"><span class="label">صفحات</span><span class="value">${week.pages}</span></div>
+          <div class="stat"><span class="label">مهارات</span><span class="value">${week.skills}</span></div>
+          <div class="stat"><span class="label">حالات</span><span class="value">${week.cases}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>رؤى ذكية</h3></div>
+        ${insights.join('')}
+      </div>
+    `;
+  }
+};
+
+function renderTodayPlan(){
+  const today=todayISO();
+  const tasks=Store.get('tasks').filter(t=>t.date===today);
+  if(!tasks.length){
+    return `<div class="card"><div class="card-head"><h3>خطة اليوم</h3></div>
+      <div class="empty"><div class="ic">🗓️</div>
+        <h4>لا مهام لليوم</h4><p>أضف مهامك لتنظيم يومك</p>
+        <button class="btn btn-primary btn-sm" data-action="quick-add" data-kind="task">+ مهمة</button>
+      </div></div>`;
+  }
+  const done=tasks.filter(t=>t.done).length;
+  return `<div class="card">
+    <div class="card-head"><h3>خطة اليوم</h3><span class="chip blue">${done}/${tasks.length}</span></div>
+    <div class="list">${tasks.map(t=>`
+      <div class="row">
+        <input type="checkbox" ${t.done?'checked':''} data-action="toggle-task" data-id="${t.id}"
+          style="width:20px;height:20px;accent-color:var(--primary)">
+        <div class="r-main">
+          <div class="r-title" style="${t.done?'text-decoration:line-through;opacity:.55':''}">${esc(t.title)}</div>
+          <div class="r-sub">${esc(t.category||'')} · ${esc(t.priority||'')}</div>
+        </div>
+      </div>`).join('')}</div>
+  </div>`;
+}
+
+/* ---------- CLINICAL ---------- */
+Views.clinical={
+  title:'Clinical Training',
+  render(){
+    const tab=App.params.tab||'overview';
+    return `
+      <div class="tabs">
+        ${tabBtn('overview','نظرة عامة',tab,'clinical')}
+        ${tabBtn('skills','المهارات',tab,'clinical')}
+        ${tabBtn('cases','الحالات',tab,'clinical')}
+        ${tabBtn('pearls','التركات',tab,'clinical')}
+        ${tabBtn('exposure','Exposure',tab,'clinical')}
+      </div>
+      ${clinicalBody(tab)}`;
+  }
+};
+function tabBtn(id,label,active,group){
+  return `<button class="tab ${id===active?'active':''}" data-tab="${group}" data-tab-id="${id}">${label}</button>`;
+}
+function clinicalBody(tab){
+  if(tab==='skills')return clinicalSkills();
+  if(tab==='cases')return clinicalCases();
+  if(tab==='pearls')return clinicalPearls();
+  if(tab==='exposure')return clinicalExposure();
+  return clinicalOverview();
+}
+function clinicalOverview(){
+  const skills=Store.get('skills');
+  const cases=Store.get('cases');
+  const pearls=Store.get('pearls');
+  const today=Calc.todayStats();
+  const week=Calc.weekStats();
+  const top=Calc.topSkills(5);
+  return `
+    <div class="grid grid-2">
+      <div class="stat"><span class="label">مهارات</span><span class="value">${skills.length}</span>
+        <span class="sub">${Calc.totalSkillAttempts()} تنفيذ</span></div>
+      <div class="stat"><span class="label">حالات</span><span class="value">${cases.length}</span>
+        <span class="sub">${week.cases} هذا الأسبوع</span></div>
+      <div class="stat"><span class="label">تركات</span><span class="value">${pearls.length}</span></div>
+      <div class="stat"><span class="label">اليوم</span><span class="value">${today.skills}</span>
+        <span class="sub">مهارات</span></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>أعلى المهارات</h3></div>
+      ${top.length?top.map(({skill,attempts})=>`
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+            <div class="bold small">${esc(skill.name)}</div>
+            <div class="small muted">${attempts}/${skill.target||50}</div>
+          </div>
+          ${progressBar(pct(attempts,skill.target||50))}
+        </div>`).join(''):
+        '<div class="empty"><p>لا مهارات بعد</p></div>'}
+    </div>`;
+}
+function clinicalSkills(){
+  const skills=Store.get('skills');
+  if(!skills.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">💉</div><h4>لا مهارات بعد</h4><p>ابدأ بإضافة مهاراتك</p>
+      <button class="btn btn-primary" data-action="add-skill">+ إضافة مهارة</button>
+    </div></div>`;
+  }
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">${skills.length} مهارة</div>
+      <button class="btn btn-primary btn-sm" data-action="add-skill">+ مهارة</button>
+    </div>
+    <div class="list">
+      ${skills.map(s=>{
+        const att=Calc.skillAttempts(s.id);
+        const p=pct(att,s.target||50);
+        return `<div class="row">
+          <div class="r-ic">💉</div>
+          <div class="r-main">
+            <div class="r-title">${esc(s.name)}</div>
+            <div class="r-sub">${esc(s.category||'—')} · ${att}/${s.target||50}</div>
+            <div class="mt-8">${progressBar(p)}</div>
+          </div>
+          <div class="r-actions">
+            <button class="btn btn-soft btn-sm" data-action="log-skill" data-id="${s.id}">+</button>
+            <button class="btn btn-ghost btn-sm" data-action="delete-skill" data-id="${s.id}">×</button>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+function clinicalCases(){
+  const cases=sortBy(Store.get('cases'),c=>c.date,'desc');
+  if(!cases.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">🩺</div><h4>لا حالات مسجلة</h4><p>سجّل الحالات التي شاهدتها</p>
+      <button class="btn btn-primary" data-action="add-case">+ حالة</button>
+    </div></div>`;
+  }
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">${cases.length} حالة</div>
+      <button class="btn btn-primary btn-sm" data-action="add-case">+ حالة</button>
+    </div>
+    <div class="list">${cases.map(c=>`
+      <div class="row">
+        <div class="r-ic" style="background:rgba(20,184,166,.12);color:var(--secondary)">🩺</div>
+        <div class="r-main">
+          <div class="r-title">${esc(c.title)}</div>
+          <div class="r-sub">${esc(c.specialty)} · ${esc(c.department||'')} · ${fmtDateShort(c.date)}</div>
+          <div class="chips mt-8">
+            <span class="chip blue">${esc(c.status||'Observed')}</span>
+            ${c.confidence?`<span class="chip">ثقة ${c.confidence}/5</span>`:''}
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm" data-action="delete-case" data-id="${c.id}">×</button>
+      </div>`).join('')}</div>`;
+}
+function clinicalPearls(){
+  const pearls=sortBy(Store.get('pearls'),p=>p.date,'desc');
+  if(!pearls.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">💎</div><h4>لا تركات بعد</h4><p>احفظ المعلومة القيّمة</p>
+      <button class="btn btn-primary" data-action="add-pearl">+ تركة</button>
+    </div></div>`;
+  }
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">${pearls.length} تركة</div>
+      <button class="btn btn-primary btn-sm" data-action="add-pearl">+ تركة</button>
+    </div>
+    <div class="list">${pearls.map(p=>`
+      <div class="row">
+        <div class="r-ic" style="background:rgba(212,175,55,.15);color:#8a6d1a">💎</div>
+        <div class="r-main">
+          <div class="r-title">${esc(p.title)} ${p.favorite?'⭐':''}</div>
+          <div class="r-sub">${esc(p.category||'')} · ${esc(p.source||'')} · ${fmtDateShort(p.date)}</div>
+          <div class="small mt-8">${esc((p.content||'').slice(0,120))}${(p.content||'').length>120?'…':''}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" data-action="delete-pearl" data-id="${p.id}">×</button>
+      </div>`).join('')}</div>`;
+}
+function clinicalExposure(){
+  const tops=Calc.topSpecialties(10);
+  const week=Calc.weekStats();
+  const month=Calc.monthStats();
+  const caseCounts={};
+  Store.get('cases').forEach(c=>caseCounts[c.specialty]=(caseCounts[c.specialty]||0)+1);
+  const needs=SPECIALTIES.filter(s=>(caseCounts[s]||0)<2).slice(0,6);
+  return `
+    <div class="grid grid-2">
+      <div class="stat"><span class="label">إجمالي الحالات</span><span class="value">${Store.get('cases').length}</span></div>
+      <div class="stat"><span class="label">هذا الأسبوع</span><span class="value">${week.cases}</span></div>
+      <div class="stat"><span class="label">هذا الشهر</span><span class="value">${month.cases}</span></div>
+      <div class="stat"><span class="label">مهارات الأسبوع</span><span class="value">${week.skills}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>أكثر التخصصات</h3></div>
+      ${tops.length?tops.map(t=>`
+        <div style="margin-bottom:9px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+            <div class="bold small">${esc(t.name)}</div>
+            <div class="small muted">${t.count}</div>
+          </div>${progressBar(pct(t.count,tops[0].count))}
+        </div>`).join(''):'<div class="empty"><p>لا بيانات</p></div>'}
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>تخصصات تحتاج تعرضًا</h3></div>
+      <div class="chips">${needs.map(n=>`<span class="chip red">${esc(n)}</span>`).join('')}</div>
+    </div>`;
+}
+
+/* ---------- STUDY ---------- */
+Views.study={
+  title:'Exam Preparation',
+  render(){
+    const tab=App.params.tab||'courses';
+    return `
+      <div class="tabs">
+        ${tabBtn('courses','الكورسات',tab,'study')}
+        ${tabBtn('books','الكتب',tab,'study')}
+        ${tabBtn('questions','بنك الأسئلة',tab,'study')}
+        ${tabBtn('reading','القراءة',tab,'study')}
+        ${tabBtn('goals','الأهداف',tab,'study')}
+      </div>
+      ${studyBody(tab)}`;
+  }
+};
+function studyBody(tab){
+  if(tab==='books')return studyBooks();
+  if(tab==='questions')return studyQuestions();
+  if(tab==='reading')return studyReading();
+  if(tab==='goals')return studyGoals();
+  return studyCourses();
+}
+function studyCourses(){
+  const courses=Store.get('courses');
+  if(!courses.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">🎬</div><h4>لا كورسات</h4><p>أضف كورس فيديو وتابع تقدمك</p>
+      <button class="btn btn-primary" data-action="add-course">+ كورس</button>
+    </div></div>`;
+  }
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">${courses.length} كورس</div>
+      <button class="btn btn-primary btn-sm" data-action="add-course">+ كورس</button>
+    </div>
+    ${courses.map(c=>{
+      const videos=Store.get('videos').filter(v=>v.courseId===c.id);
+      const done=videos.filter(v=>v.status==='Completed').length;
+      const p=videos.length?Math.round((done/videos.length)*100):0;
+      return `<div class="card">
+        <div class="card-head">
+          <div><h3>${esc(c.title)}</h3>
+            <div class="small muted">${videos.length} فيديو · ${esc(c.category||'')}</div></div>
+          <div class="chip blue">${done}/${videos.length}</div>
+        </div>
+        ${progressBar(p)}
+        <div class="mt-12">
+          ${videos.map((v,i)=>`
+            <div class="row" style="margin-bottom:5px">
+              <div class="r-ic" style="background:${v.status==='Completed'?'rgba(22,163,74,.15)':'var(--primary-50)'};color:${v.status==='Completed'?'var(--success)':'var(--primary)'}">
+                ${v.status==='Completed'?'✓':'▶'}
+              </div>
+              <div class="r-main">
+                <div class="r-title">${esc(v.title||('Video '+(i+1)))}</div>
+                <div class="r-sub">${v.duration?esc(v.duration)+' دقيقة':'—'}</div>
+              </div>
+              <button class="btn ${v.status==='Completed'?'btn-outline':'btn-primary'} btn-sm"
+                data-action="toggle-video" data-id="${v.id}">
+                ${v.status==='Completed'?'إلغاء':'إنهاء'}
+              </button>
+            </div>`).join('')}
+        </div>
+        <div class="flex gap-6 mt-12">
+          <button class="btn btn-soft btn-sm" data-action="add-video" data-id="${c.id}">+ فيديو</button>
+          <button class="btn btn-ghost btn-sm" data-action="delete-course" data-id="${c.id}">حذف الكورس</button>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+function studyBooks(){
+  const books=Store.get('books').filter(b=>b.type!=='Reading');
+  if(!books.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">📚</div><h4>لا كتب</h4><p>أضف كتب الدراسة</p>
+      <button class="btn btn-primary" data-action="add-book">+ كتاب</button>
+    </div></div>`;
+  }
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">${books.length} كتاب</div>
+      <button class="btn btn-primary btn-sm" data-action="add-book">+ كتاب</button>
+    </div>
+    <div class="list">${books.map(b=>{
+      const p=pct(b.currentPage||0,b.totalPages||1);
+      const est=Calc.estimateBookCompletion(b);
+      return `<div class="card">
+        <div class="card-head">
+          <div style="min-width:0">
+            <h3>${esc(b.title)}</h3>
+            <div class="small muted">${esc(b.author||'')} · ${esc(b.type||'Exam')}</div>
+          </div>
+          <div class="chip blue">${p}%</div>
+        </div>
+        ${progressBar(p)}
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <div class="small muted">${b.currentPage||0} / ${b.totalPages||0}</div>
+          <div class="small muted">متبقي: ${Math.max(0,(b.totalPages||0)-(b.currentPage||0))}</div>
+        </div>
+        ${est?`<div class="small muted mt-8">📅 متوقع: ${fmtDate(est)}</div>`:''}
+        <div class="flex gap-6 mt-12">
+          <button class="btn btn-soft btn-sm" data-action="log-reading" data-id="${b.id}">تسجيل قراءة</button>
+          <button class="btn btn-ghost btn-sm" data-action="delete-book" data-id="${b.id}">حذف</button>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+}
+function studyQuestions(){
+  const banks=Store.get('questionBanks');
+  const t=Store.get('settings').targets;
+  const today=Calc.questionsIn(todayISO(),todayISO());
+  if(!banks.length){
+    return `<div class="card"><div class="empty">
+      <div class="ic">❓</div><h4>لا بنوك أسئلة</h4><p>أضف PassMedicine أو أي بنك</p>
+      <button class="btn btn-primary" data-action="add-bank">+ بنك</button>
+    </div></div>`;
+  }
+  const recent=sortBy(Store.get('questionSessions'),s=>s.date,'desc').slice(0,6);
+  return `
+    <div class="card">
+      <div class="card-head"><h3>أسئلة اليوم</h3>
+        <span class="chip blue">${today.total}/${t.questions}</span></div>
+      ${progressBar(pct(today.total,t.questions))}
+      <div class="grid grid-2 mt-12">
+        <div class="stat"><span class="label">صحيحة</span><span class="value">${today.correct}</span></div>
+        <div class="stat"><span class="label">خاطئة</span><span class="value">${today.wrong}</span></div>
+        <div class="stat"><span class="label">دقة اليوم</span><span class="value">${today.accuracy}%</span></div>
+        <div class="stat"><span class="label">الأسبوع</span><span class="value">${Calc.weekStats().questions.total}</span></div>
+      </div>
+      <button class="btn btn-primary btn-block mt-12" data-action="log-questions">تسجيل جلسة أسئلة</button>
+    </div>
+    <div class="flex between-center mb-12">
+      <div class="bold">بنوك الأسئلة</div>
+      <button class="btn btn-primary btn-sm" data-action="add-bank">+ بنك</button>
+    </div>
+    ${banks.map(b=>{
+      const p=pct(b.completed||0,b.total||1);
+      return `<div class="card">
+        <div class="card-head">
+          <div><h3>${esc(b.name)}</h3><div class="small muted">${esc(b.type||'QBank')}</div></div>
+          <div class="chip blue">${p}%</div>
+        </div>
+        ${progressBar(p)}
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <div class="small muted">${b.completed||0}/${b.total||0}</div>
+          <div class="small muted">متبقي: ${Math.max(0,(b.total||0)-(b.completed||0))}</div>
+        </div>
+        <button class="btn btn-ghost btn-sm mt-12" data-action="delete-bank" data-id="${b.id}">حذف</button>
+      </div>`;
+    }).join('')}
+    ${recent.length?`<div class="card">
+      <div class="card-head"><h3>آخر الجلسات</h3></div>
+      <div class="list">${recent.map(r=>`
+        <div class="row"><div class="r-main">
+          <div class="r-title">${r.count} سؤال · ${r.correct||0} صحيح</div>
+          <div class="r-sub">${esc(r.bankName||'')} · ${fmtDate(r.date)} · دقة ${r.count?Math.round((r.correct/r.count)*100):0}%</div>
+        </div></div>`).join('')}</div>
+    </div>`:''}`;
+}
+function studyReading(){
+  const books=Store.get('books').filter(b=>b.type==='Reading');
+  return `
+    <div class="flex between-center mb-12">
+      <div class="bold">كتب القراءة</div>
+      <button class="btn btn-primary btn-sm" data-action="add-reading-book">+ كتاب</button>
+    </div>
+    ${books.length?books.map(b=>{
+      const p=pct(b.currentPage||0,b.totalPages||1);
+      const est=Calc.estimateBookCompletion(b);
+      const weekPages=Calc.pagesIn(startOfWeek(),endOfWeek());
+      return `<div class="card">
+        <div class="card-head">
+          <div><h3>${esc(b.title)}</h3><div class="small muted">${esc(b.author||'')}</div></div>
+          <div class="chip blue">${p}%</div>
+        </div>
+        ${progressBar(p)}
+        <div class="grid grid-3 mt-12">
+          <div class="stat"><span class="label">الحالي</span><span class="value">${b.currentPage||0}</span></div>
+          <div class="stat"><span class="label">الكل</span><span class="value">${b.totalPages||0}</span></div>
+          <div class="stat"><span class="label">الأسبوع</span><span class="value">${weekPages}</span></div>
+        </div>
+        ${est?`<div class="small muted mt-8">📅 متوقع الإكمال: ${fmtDate(est)}</div>`:''}
+        <div class="flex gap-6 mt-12">
+          <button class="btn btn-soft btn-sm" data-action="log-reading" data-id="${b.id}">تسجيل جلسة</button>
+          <button class="btn btn-ghost btn-sm" data-action="delete-book" data-id="${b.id}">حذف</button>
+        </div>
+      </div>`;
+    }).join(''):'<div class="card"><div class="empty"><div class="ic">📖</div><h4>لا كتب</h4></div></div>'}
+    <div class="card">
+      <div class="card-head"><h3>آخر الجلسات</h3></div>
+      ${(()=>{
+        const sess=sortBy(Store.get('readingSessions'),r=>r.date,'desc').slice(0,6);
+        if(!sess.length)return '<div class="empty"><p>لا جلسات</p></div>';
+        return `<div class="list">${sess.map(s=>`
+          <div class="row"><div class="r-main">
+            <div class="r-title">${esc(s.bookName||'—')}</div>
+            <div class="r-sub">${s.pages} صفحة · ${fmtDate(s.date)}${s.duration?` · ${s.duration}د`:''}</div>
+          </div></div>`).join('')}</div>`;
+      })()}
+    </div>`;
+}
+function studyGoals(){
+  const goals=Store.get('goals');
+  const t=Store.get('settings').targets;
+  const today=Calc.todayStats();
+  const month=Calc.monthStats();
+  const dailyPct=Math.round((
+    pct(today.questions.total,t.questions)+
+    pct(today.pages,t.pages)+
+    pct(today.skills,t.clinical)+
+    pct(today.videos,t.videos)
+  )/4);
+  return `
+    <div class="card">
+      <div class="card-head"><h3>الأهداف اليومية</h3><span class="chip blue">${dailyPct}%</span></div>
+      ${progressBar(dailyPct)}
+      <div class="grid grid-2 mt-12">
+        <div class="stat"><span class="label">أسئلة</span>
+          <span class="value">${today.questions.total}<small class="muted small"> / ${t.questions}</small></span></div>
+        <div class="stat"><span class="label">صفحات</span>
+          <span class="value">${today.pages}<small class="muted small"> / ${t.pages}</small></span></div>
+        <div class="stat"><span class="label">مهارات</span>
+          <span class="value">${today.skills}<small class="muted small"> / ${t.clinical}</small></span></div>
+        <div class="stat"><span class="label">فيديو</span>
+          <span class="value">${today.videos}<small class="muted small"> / ${t.videos}</small></span></div>
+      </div>
+      <button class="btn btn-soft btn-block mt-12" data-action="edit-targets">تعديل الأهداف</button>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>هذا الشهر</h3></div>
+      <div class="grid grid-3">
+        <div class="stat"><span class="label">أسئلة</span><span class="value">${month.questions.total}</span></div>
+        <div class="stat"><span class="label">صفحات</span><span class="value">${month.pages}</span></div>
+        <div class="stat"><span class="label">مهارات</span><span class="value">${month.skills}</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><h3>أهداف مخصصة</h3>
+        <button class="btn btn-primary btn-sm" data-action="add-goal">+ هدف</button></div>
+      ${goals.length?`<div class="list">${goals.map(g=>{
+        const prog=Calc.goalProgress(g);
+        return `<div class="row">
+          <div class="r-main">
+            <div class="r-title">${esc(g.title)}</div>
+            <div class="r-sub">${esc(g.period||'monthly')} · ${prog.current} / ${g.target}</div>
+            <div class="mt-8">${progressBar(pct(prog.current,g.target))}</div>
+          </div>
+          <button class="btn btn-ghost btn-sm" data-action="delete-goal" data-id="${g.id}">حذف</button>
+        </div>`;
+      }).join('')}</div>`:'<div class="empty"><p>لا أهداف مخصصة</p></div>'}
+    </div>`;
+}
+
+/* ---------- READING ---------- */
+Views.reading={
+  title:'Medical Reading',
+  render(){
+    const books=Store.get('books').filter(b=>b.type==='Reading');
+    const week=Calc.pagesIn(startOfWeek(),endOfWeek());
+    const month=Calc.pagesIn(startOfMonth(),endOfMonth());
+    const today=Calc.pagesIn(todayISO(),todayISO());
+    const totalPages=sum(books,b=>b.currentPage||0);
+    return `
+      <div class="grid grid-2">
+        <div class="stat"><span class="label">اليوم</span><span class="value">${today}</span></div>
+        <div class="stat"><span class="label">الأسبوع</span><span class="value">${week}</span></div>
+        <div class="stat"><span class="label">الشهر</span><span class="value">${month}</span></div>
+        <div class="stat"><span class="label">إجمالي مُقروء</span><span class="value">${totalPages}</span></div>
+      </div>
+      <div class="flex between-center mb-12 mt-16">
+        <div class="bold">${books.length} كتاب</div>
+        <button class="btn btn-primary btn-sm" data-action="add-reading-book">+ كتاب</button>
+      </div>
+      ${books.length?books.map(b=>{
+        const p=pct(b.currentPage||0,b.totalPages||1);
+        return `<div class="card">
+          <div class="card-head">
+            <div><h3>${esc(b.title)}</h3><div class="small muted">${esc(b.author||'')}</div></div>
+            <div class="chip blue">${p}%</div>
+          </div>
+          ${progressBar(p)}
+          <div class="small muted mt-8">${b.currentPage||0}/${b.totalPages||0} صفحة</div>
+          <div class="flex gap-6 mt-12">
+            <button class="btn btn-soft btn-sm" data-action="log-reading" data-id="${b.id}">+ جلسة</button>
+            <button class="btn btn-ghost btn-sm" data-action="delete-book" data-id="${b.id}">حذف</button>
+          </div>
+        </div>`;
+      }).join(''):'<div class="card"><div class="empty"><div class="ic">📖</div><h4>لا كتب</h4></div></div>'}
+    `;
+  }
+};
+
+/* ---------- LIBRARY ---------- */
+Views.library={
+  title:'Knowledge Base',
+  render(){
+    const notes=sortBy(Store.get('notes'),n=>n.createdAt,'desc');
+    const filter=App.params.filter||'all';
+    const list=filter==='favorites'?notes.filter(n=>n.favorite):notes;
+    return `
+      <div class="tabs">
+        <button class="tab ${filter==='all'?'active':''}" data-tab="library" data-tab-id="all">الكل</button>
+        <button class="tab ${filter==='favorites'?'active':''}" data-tab="library" data-tab-id="favorites">المفضلة</button>
+      </div>
+      <div class="flex between-center mb-12">
+        <div class="bold">${list.length} ملاحظة</div>
+        <button class="btn btn-primary btn-sm" data-action="add-note">+ ملاحظة</button>
+      </div>
+      ${list.length?`<div class="list">${list.map(n=>`
+        <div class="card">
+          <div class="card-head">
+            <div style="min-width:0">
+              <h3>${esc(n.title)} ${n.favorite?'⭐':''}</h3>
+              <div class="small muted">${esc(n.specialty||'')} · ${fmtDateShort((n.createdAt||'').slice(0,10))}</div>
+            </div>
+          </div>
+          <div class="small" style="white-space:pre-wrap">${esc((n.content||'').slice(0,200))}${(n.content||'').length>200?'…':''}</div>
+          ${n.tags?.length?`<div class="chips mt-8">${n.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>`:''}
+          <div class="flex gap-6 mt-12">
+            <button class="btn btn-ghost btn-sm" data-action="toggle-fav-note" data-id="${n.id}">${n.favorite?'إزالة ⭐':'⭐'}</button>
+            <button class="btn btn-ghost btn-sm" data-action="delete-note" data-id="${n.id}">حذف</button>
+          </div>
+        </div>`).join('')}</div>`:'<div class="card"><div class="empty"><div class="ic">📝</div><h4>لا ملاحظات</h4></div></div>'}
+    `;
+  }
+};
+
+/* ---------- RESEARCH ---------- */
+Views.research={
+  title:'Research',
+  render(){
+    const projects=sortBy(Store.get('researchProjects'),p=>p.createdAt,'desc');
+    return `
+      <div class="flex between-center mb-12">
+        <div class="bold">${projects.length} مشروع</div>
+        <button class="btn btn-primary btn-sm" data-action="add-research">+ مشروع</button>
+      </div>
+      ${projects.length?projects.map(p=>`
+        <div class="card">
+          <div class="card-head">
+            <div style="min-width:0">
+              <h3>${esc(p.title)}</h3>
+              <div class="small muted">${esc(p.type)} · ${esc(p.status)}</div>
+            </div>
+            <div class="chip blue">${p.progress||0}%</div>
+          </div>
+          ${progressBar(p.progress||0)}
+          ${p.journal?`<div class="small muted mt-8">📰 ${esc(p.journal)}</div>`:''}
+          ${p.deadline?`<div class="small muted mt-8">📅 ${fmtDate(p.deadline)}</div>`:''}
+          <div class="flex gap-6 mt-12">
+            <button class="btn btn-soft btn-sm" data-action="update-research" data-id="${p.id}">تحديث</button>
+            <button class="btn btn-ghost btn-sm" data-action="delete-research" data-id="${p.id}">حذف</button>
+          </div>
+        </div>`).join(''):'<div class="card"><div class="empty"><div class="ic">🔬</div><h4>لا مشاريع بحثية</h4></div></div>'}
+    `;
+  }
+};
+
+/* ---------- PLANNER ---------- */
+Views.planner={
+  title:'Planner',
+  render(){
+    const today=todayISO();
+    const tasks=Store.get('tasks').filter(t=>t.date===today);
+    const done=tasks.filter(t=>t.done).length;
+    return `
+      <div class="card">
+        <div class="card-head"><h3>مهام اليوم</h3><span class="chip blue">${done}/${tasks.length}</span></div>
+        <button class="btn btn-primary btn-block mb-12" data-action="add-task">+ مهمة</button>
+        ${tasks.length?`<div class="list">${tasks.map(t=>`
+          <div class="row">
+            <input type="checkbox" ${t.done?'checked':''} data-action="toggle-task" data-id="${t.id}" style="width:20px;height:20px">
+            <div class="r-main">
+              <div class="r-title" style="${t.done?'text-decoration:line-through;opacity:.55':''}">${esc(t.title)}</div>
+              <div class="r-sub">${esc(t.category||'')} · ${esc(t.priority||'')}${t.estMin?` · ${t.estMin} د`:''}</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" data-action="delete-task" data-id="${t.id}">حذف</button>
+          </div>`).join('')}</div>`:'<div class="empty"><p>لا مهام اليوم</p></div>'}
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>التايم لاين</h3></div>
+        ${renderTimeline()}
+      </div>
+    `;
+  }
+};
+function renderTimeline(){
+  const events=[];
+  Store.get('skillSessions').forEach(s=>s.date&&events.push({date:s.date,text:`💉 ${s.skillName||''} × ${s.count||1}`}));
+  Store.get('cases').forEach(c=>c.date&&events.push({date:c.date,text:`🩺 حالة: ${c.title}`}));
+  Store.get('questionSessions').forEach(s=>s.date&&events.push({date:s.date,text:`❓ ${s.count} سؤال (${s.correct||0} صحيح)`}));
+  Store.get('readingSessions').forEach(s=>s.date&&events.push({date:s.date,text:`📖 ${s.pages} صفحة — ${s.bookName||''}`}));
+  Store.get('videos').filter(v=>v.completedAt).forEach(v=>events.push({date:v.completedAt.slice(0,10),text:`🎬 ${v.title}`}));
+  const byDate={};
+  events.forEach(e=>{(byDate[e.date]||=[]).push(e)});
+  const dates=Object.keys(byDate).sort().reverse().slice(0,10);
+  if(!dates.length)return '<div class="empty"><p>لا نشاطات بعد</p></div>';
+  return dates.map(d=>`
+    <div style="margin-bottom:12px">
+      <div class="bold small mb-8">${fmtDate(d)} · ${fmtDayName(d)}</div>
+      <div class="tl">${byDate[d].map(e=>`<div class="tl-item">${esc(e.text)}</div>`).join('')}</div>
+    </div>`).join('');
+}
+
+/* ---------- ANALYTICS ---------- */
+Views.analytics={
+  title:'Analytics',
+  render(){
+    const sub=Calc.subScores();
+    const weak=Calc.weakestSpecialties(5);
+    return `
+      <div class="card">
+        <div class="card-head"><h3>Medical Progress Score</h3></div>
+        <div class="flex items-center gap-10">
+          ${ring(Calc.progressScore().score,88,8)}
+          <div style="flex:1">
+            ${Object.entries({
+              'Clinical':sub.clinical,'Study':sub.study,'Questions':sub.questions,
+              'Reading':sub.reading,'Research':sub.research
+            }).map(([k,v])=>`
+              <div style="display:flex;justify-content:space-between;margin-bottom:5px">
+                <div class="small bold">${k}</div><div class="small muted">${v}%</div>
+              </div>${progressBar(v)}`).join('')}
+          </div>
+        </div>
+      </div>
+      ${(!window.Chart||window.__noChart)?'<div class="insight"><div class="ic">📊</div><p>الرسوم البيانية غير متاحة حاليًا لأن مكتبة Chart.js المحلية غير موجودة. تظل كل الإحصاءات والبيانات محفوظة وتعمل دون إنترنت.</p></div>':''}
+      <div class="card"><div class="card-head"><h3>الأسئلة (14 يوم)</h3></div>
+        <div style="height:180px"><canvas id="ch-q"></canvas></div></div>
+      <div class="card"><div class="card-head"><h3>الدقة %</h3></div>
+        <div style="height:180px"><canvas id="ch-acc"></canvas></div></div>
+      <div class="card"><div class="card-head"><h3>الصفحات اليومية</h3></div>
+        <div style="height:180px"><canvas id="ch-pg"></canvas></div></div>
+      <div class="card"><div class="card-head"><h3>المهارات السريرية</h3></div>
+        <div style="height:180px"><canvas id="ch-sk"></canvas></div></div>
+      <div class="card"><div class="card-head"><h3>أكثر التخصصات</h3></div>
+        <div style="height:220px"><canvas id="ch-spec"></canvas></div></div>
+      <div class="card">
+        <div class="card-head"><h3>أضعف المجالات</h3></div>
+        ${weak.length?weak.map(w=>`
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+            <div class="bold">${esc(w.topic)}</div>
+            <div class="chip red">${w.accuracy}%</div>
+          </div>`).join(''):'<div class="empty"><p>لا بيانات كافية</p></div>'}
+      </div>
+    `;
+  },
+  mount(){
+    if(!window.Chart||window.__noChart)return;
+    const today=todayISO();
+    const days=[...Array(14)].map((_,i)=>addDays(today,-13+i));
+    const labels=days.map(d=>fmtDateShort(d));
+    const common={
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#94A3B8',font:{size:10}}},
+        y:{grid:{color:'rgba(148,163,184,.15)'},ticks:{color:'#94A3B8',font:{size:10}},beginAtZero:true}
+      }
+    };
+    const mk=(id,type,data,color)=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      try{
+        new Chart(el,{
+          type,
+          data:{labels,datasets:[{
+            data,
+            backgroundColor:type==='bar'?color:'rgba(15,76,129,.1)',
+            borderColor:color,
+            borderWidth:type==='line'?2:0,
+            tension:.35,fill:type==='line',borderRadius:6
+          }]},
+          options:common
+        });
+      }catch(e){console.warn(e)}
+    };
+    mk('ch-q','bar',days.map(d=>Calc.questionsIn(d,d).total),'#0F4C81');
+    mk('ch-acc','line',days.map(d=>Calc.questionsIn(d,d).accuracy),'#14B8A6');
+    mk('ch-pg','bar',days.map(d=>Calc.pagesIn(d,d)),'#D4AF37');
+    mk('ch-sk','bar',days.map(d=>Calc.skillAttemptsIn(d,d)),'#0F4C81');
+
+    const specEl=document.getElementById('ch-spec');
+    if(specEl){
+      const tops=Calc.topSpecialties(6);
+      if(tops.length){
+        try{
+          new Chart(specEl,{
+            type:'doughnut',
+            data:{
+              labels:tops.map(t=>t.name),
+              datasets:[{data:tops.map(t=>t.count),
+                backgroundColor:['#0F4C81','#14B8A6','#D4AF37','#7DD3FC','#F59E0B','#DC2626']}]
+            },
+            options:{responsive:true,maintainAspectRatio:false,
+              plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}}}}
+          });
+        }catch(e){console.warn(e)}
+      }
+    }
+  }
+};
+
+/* ---------- REPORTS ---------- */
+Views.reports={
+  title:'Reports',
+  render(){
+    return `
+      <div class="card">
+        <div class="card-head"><h3>التقارير</h3></div>
+        <div class="grid grid-2">
+          <button class="btn btn-soft btn-block" data-action="report-preview" data-range="day">اليوم</button>
+          <button class="btn btn-soft btn-block" data-action="report-preview" data-range="week">الأسبوع</button>
+          <button class="btn btn-soft btn-block" data-action="report-preview" data-range="month">الشهر</button>
+          <button class="btn btn-soft btn-block" data-action="report-preview" data-range="custom">مخصص</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>التصدير والنسخ</h3></div>
+        <button class="btn btn-outline btn-block mb-8" data-action="export-json">📦 تصدير JSON كامل</button>
+        <button class="btn btn-outline btn-block mb-8" data-action="export-csv">📊 تصدير CSV</button>
+        <button class="btn btn-outline btn-block mb-8" data-action="export-pdf">📄 تصدير PDF (طباعة)</button>
+        <button class="btn btn-outline btn-block" data-action="import-json">📥 استيراد JSON</button>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>هذا الأسبوع</h3></div>
+        ${weeklySummaryHTML()}
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>هذا الشهر</h3></div>
+        ${monthlySummaryHTML()}
+      </div>
+    `;
+  }
+};
+function weeklySummaryHTML(){
+  const w=Calc.weekStats();
+  const lw=Calc.lastWeekStats();
+  const ch=(a,b)=>b?`${a>=b?'+':''}${Math.round(((a-b)/b)*100)}%`:'—';
+  return `<div class="grid grid-2">
+    <div class="stat"><span class="label">أسئلة</span><span class="value">${w.questions.total}</span>
+      <span class="sub">${ch(w.questions.total,lw.questions.total)} عن الماضي</span></div>
+    <div class="stat"><span class="label">صفحات</span><span class="value">${w.pages}</span>
+      <span class="sub">${ch(w.pages,lw.pages)}</span></div>
+    <div class="stat"><span class="label">مهارات</span><span class="value">${w.skills}</span>
+      <span class="sub">${ch(w.skills,lw.skills)}</span></div>
+    <div class="stat"><span class="label">حالات</span><span class="value">${w.cases}</span>
+      <span class="sub">${ch(w.cases,lw.cases)}</span></div>
+    <div class="stat"><span class="label">فيديوهات</span><span class="value">${w.videos}</span>
+      <span class="sub">${ch(w.videos,lw.videos)}</span></div>
+    <div class="stat"><span class="label">دقة الأسئلة</span><span class="value">${w.questions.accuracy}%</span></div>
+  </div>`;
+}
+function monthlySummaryHTML(){
+  const m=Calc.monthStats();
+  const streak=Calc.streak();
+  const weak=Calc.weakestSpecialties(1)[0];
+  return `<div class="grid grid-2">
+    <div class="stat"><span class="label">أسئلة</span><span class="value">${m.questions.total}</span></div>
+    <div class="stat"><span class="label">دقة</span><span class="value">${m.questions.accuracy}%</span></div>
+    <div class="stat"><span class="label">صفحات</span><span class="value">${m.pages}</span></div>
+    <div class="stat"><span class="label">مهارات</span><span class="value">${m.skills}</span></div>
+    <div class="stat"><span class="label">حالات</span><span class="value">${m.cases}</span></div>
+    <div class="stat"><span class="label">أطول سلسلة</span><span class="value">${streak.best} 🔥</span></div>
+  </div>
+  ${weak?`<div class="insight mt-12"><div class="ic">⚠️</div><p>أضعف مجال: <b>${esc(weak.topic)}</b> (${weak.accuracy}%)</p></div>`:''}`;
+}
+
+/* ---------- SETTINGS ---------- */
+Views.settings={
+  title:'Settings',
+  render(){
+    const s=Store.get('settings');
+    const stats={
+      skills:Store.get('skills').length,
+      cases:Store.get('cases').length,
+      notes:Store.get('notes').length,
+      sessions:Store.get('questionSessions').length+Store.get('skillSessions').length+Store.get('readingSessions').length
+    };
+    return `
+      <div class="card">
+        <div class="card-head"><h3>الملف الشخصي</h3></div>
+        <label class="fld"><span>الاسم</span>
+          <input id="set-name" value="${esc(s.profile?.name||'')}" placeholder="Dr. اسمك"></label>
+        <label class="fld"><span>الامتحان المستهدف</span>
+          <input id="set-exam" value="${esc(s.profile?.targetExam||'')}" placeholder="MRCP / PLAB / MRCS"></label>
+        <button class="btn btn-primary btn-block" data-action="save-profile">حفظ</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>الأهداف اليومية</h3></div>
+        <div class="fld-row">
+          <label class="fld"><span>أسئلة/يوم</span>
+            <input type="number" id="tg-q" value="${s.targets.questions}"></label>
+          <label class="fld"><span>صفحات/يوم</span>
+            <input type="number" id="tg-p" value="${s.targets.pages}"></label>
+          <label class="fld"><span>مهارات/يوم</span>
+            <input type="number" id="tg-s" value="${s.targets.clinical}"></label>
+          <label class="fld"><span>فيديو/يوم</span>
+            <input type="number" id="tg-v" value="${s.targets.videos}"></label>
+          <label class="fld"><span>دقائق دراسة</span>
+            <input type="number" id="tg-sm" value="${s.targets.studyMinutes}"></label>
+          <label class="fld"><span>دقائق بحث</span>
+            <input type="number" id="tg-rm" value="${s.targets.researchMinutes}"></label>
+        </div>
+        <button class="btn btn-primary btn-block" data-action="save-targets">حفظ</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>أوزان Progress Score</h3></div>
+        <div class="fld-row">
+          <label class="fld"><span>Clinical</span><input type="number" id="w-c" value="${s.weights.clinical}"></label>
+          <label class="fld"><span>Study</span><input type="number" id="w-s" value="${s.weights.study}"></label>
+          <label class="fld"><span>Questions</span><input type="number" id="w-q" value="${s.weights.questions}"></label>
+          <label class="fld"><span>Reading</span><input type="number" id="w-r" value="${s.weights.reading}"></label>
+          <label class="fld"><span>Research</span><input type="number" id="w-rs" value="${s.weights.research}"></label>
+        </div>
+        <button class="btn btn-primary btn-block" data-action="save-weights">حفظ الأوزان</button>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>إحصائيات البيانات</h3></div>
+        <div class="grid grid-2">
+          <div class="stat"><span class="label">مهارات</span><span class="value">${stats.skills}</span></div>
+          <div class="stat"><span class="label">حالات</span><span class="value">${stats.cases}</span></div>
+          <div class="stat"><span class="label">ملاحظات</span><span class="value">${stats.notes}</span></div>
+          <div class="stat"><span class="label">جلسات</span><span class="value">${stats.sessions}</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>المظهر</h3></div>
+        <div class="fld-row">
+          <button class="btn btn-outline" data-action="set-theme" data-val="light">☀️ فاتح</button>
+          <button class="btn btn-outline" data-action="set-theme" data-val="dark">🌙 داكن</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>البيانات</h3></div>
+        <div class="insight mb-12">
+          <div class="ic">🔒</div>
+          <p class="small">بياناتك محفوظة محليًا على هذا الجهاز فقط.</p>
+        </div>
+        <button class="btn btn-outline btn-block mb-8" data-action="export-json">📦 Export Full Backup</button>
+        <button class="btn btn-outline btn-block mb-8" data-action="import-json">📥 Import Backup</button>
+        <button class="btn btn-outline btn-block mb-8" data-action="load-demo">🎬 تحميل بيانات تجريبية</button>
+        <button class="btn btn-danger btn-block" data-action="reset-all">🗑 حذف جميع البيانات</button>
+      </div>
+      <div class="card"><div class="card-head"><h3>Data Health</h3></div>
+        <p class="small">Database status: <b>${Store.db?'Healthy':'Unavailable'}</b><br>
+        Records: ${Store.collections.reduce((n,c)=>n+Store.get(c).length,0)}<br>
+        Last save: ${Store.lastSave?new Date(Store.lastSave).toLocaleString('ar-EG'):'—'}<br>
+        Storage: IndexedDB · Offline mode: ${navigator.serviceWorker?'Ready':'Browser dependent'}</p></div>
+
+      <div class="card">
+        <div class="card-head"><h3>حول</h3></div>
+        <p class="small muted" style="line-height:1.7">
+          <b>MEDICAL OS v1.0.0</b><br>
+          تطبيق شخصي لتعقب التدريب السريري والدراسة.
+        </p>
+        <div class="insight mt-12">
+          <div class="ic">⚕️</div>
+          <p class="small">تطبيق تعليمي شخصي. ليس بديلاً عن الإرشادات السريرية أو الإشراف الطبي.</p>
+        </div>
+      </div>
+    `;
+  }
+};
+
+/* ============================================================
+   FORMS
+============================================================ */
+const FORMS={
+  skillSession:()=>({
+    fields:[
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'count',label:'عدد المرات',type:'number',value:1,min:1},
+      {name:'setting',label:'المكان',type:'select',options:SETTINGS_TYPES},
+      {name:'supervisor',label:'المشرف (اختياري)'},
+      {name:'difficulty',label:'الصعوبة',type:'select',options:DIFFICULTY},
+      {name:'confidence',label:'الثقة',type:'range',min:1,max:5,value:3},
+      {name:'notes',label:'ملاحظات',type:'textarea',rows:2}
+    ]
+  }),
+  case:()=>({
+    fields:[
+      {name:'title',label:'عنوان الحالة',required:true,placeholder:'Acute MI'},
+      {name:'specialty',label:'التخصص',type:'select',options:SPECIALTIES},
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'department',label:'القسم',type:'select',options:SETTINGS_TYPES},
+      {name:'ageGroup',label:'الفئة العمرية',type:'select',
+        options:['Neonate','Infant','Child','Adolescent','Adult','Elderly']},
+      {name:'presentation',label:'العرض السريري',type:'textarea',rows:2},
+      {name:'diagnosis',label:'التشخيص',type:'textarea',rows:2},
+      {name:'management',label:'الإدارة',type:'textarea',rows:2},
+      {name:'learned',label:'ما تعلمته',type:'textarea',rows:2},
+      {name:'status',label:'الحالة',type:'select',options:CASE_STATUS},
+      {name:'confidence',label:'مستوى الثقة',type:'range',min:1,max:5,value:3}
+    ]
+  }),
+  pearl:()=>({
+    fields:[
+      {name:'title',label:'العنوان',required:true},
+      {name:'category',label:'التصنيف',type:'select',options:SPECIALTIES},
+      {name:'content',label:'المحتوى',type:'textarea',rows:3,required:true},
+      {name:'source',label:'المصدر',type:'select',options:PEARL_SOURCES},
+      {name:'importance',label:'الأهمية',type:'select',options:PEARL_IMPORTANCE},
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'favorite',label:'مفضلة؟',type:'select',options:[['no','لا'],['yes','نعم']]}
+    ]
+  }),
+  course:()=>({
+    fields:[
+      {name:'title',label:'اسم الكورس',required:true,placeholder:'MRCP Part 1 Course'},
+      {name:'category',label:'التصنيف',placeholder:'MRCP / MRCS / PLAB'},
+      {name:'totalVideos',label:'عدد الفيديوهات',type:'number',value:12,min:1}
+    ]
+  }),
+  video:()=>({
+    fields:[
+      {name:'title',label:'عنوان الفيديو',required:true},
+      {name:'duration',label:'المدة (دقيقة)',type:'number',min:0},
+      {name:'status',label:'الحالة',type:'select',options:VIDEO_STATUS}
+    ]
+  }),
+  book:()=>({
+    fields:[
+      {name:'title',label:'عنوان الكتاب',required:true},
+      {name:'author',label:'المؤلف'},
+      {name:'totalPages',label:'عدد الصفحات',type:'number',value:500,min:1},
+      {name:'currentPage',label:'الصفحة الحالية',type:'number',value:0,min:0}
+    ]
+  }),
+  readingSession:()=>({
+    fields:[
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'fromPage',label:'من صفحة',type:'number',value:0,min:0},
+      {name:'toPage',label:'إلى صفحة',type:'number',value:0,min:0},
+      {name:'duration',label:'المدة (دقيقة)',type:'number',value:30,min:0},
+      {name:'notes',label:'ملاحظات',type:'textarea',rows:2}
+    ]
+  }),
+  bank:()=>({
+    fields:[
+      {name:'name',label:'اسم البنك',required:true,placeholder:'PassMedicine'},
+      {name:'type',label:'النوع',type:'select',options:['QBank','Book','Course','Other']},
+      {name:'total',label:'إجمالي الأسئلة',type:'number',value:1000,min:1},
+      {name:'completed',label:'المكتمل',type:'number',value:0,min:0}
+    ]
+  }),
+  questionSession:()=>({
+    fields:[
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'bankName',label:'البنك',placeholder:'PassMedicine'},
+      {name:'topic',label:'التخصص',type:'select',options:['General',...SPECIALTIES]},
+      {name:'count',label:'عدد الأسئلة',type:'number',value:20,min:1,required:true},
+      {name:'correct',label:'الإجابات الصحيحة',type:'number',value:15,min:0},
+      {name:'duration',label:'المدة (دقيقة)',type:'number',value:30,min:0},
+      {name:'notes',label:'ملاحظات',type:'textarea',rows:2}
+    ]
+  }),
+  research:()=>({
+    fields:[
+      {name:'title',label:'عنوان المشروع',required:true},
+      {name:'type',label:'النوع',type:'select',options:RESEARCH_TYPES},
+      {name:'status',label:'الحالة',type:'select',options:RESEARCH_STATUS},
+      {name:'progress',label:'نسبة التقدم %',type:'number',value:0,min:0,max:100},
+      {name:'deadline',label:'الموعد النهائي',type:'date'},
+      {name:'journal',label:'المجلة'},
+      {name:'notes',label:'ملاحظات',type:'textarea',rows:2}
+    ]
+  }),
+  note:()=>({
+    fields:[
+      {name:'title',label:'العنوان',required:true},
+      {name:'specialty',label:'التخصص',type:'select',options:['General',...SPECIALTIES]},
+      {name:'content',label:'المحتوى',type:'textarea',rows:5,required:true},
+      {name:'tags',label:'وسوم (بفاصلة)',placeholder:'ECG, MI, emergency'}
+    ]
+  }),
+  task:()=>({
+    fields:[
+      {name:'title',label:'المهمة',required:true},
+      {name:'date',label:'التاريخ',type:'date'},
+      {name:'category',label:'التصنيف',type:'select',options:TASK_CATEGORIES},
+      {name:'priority',label:'الأولوية',type:'select',options:PRIORITIES},
+      {name:'estMin',label:'الوقت المتوقع (دقيقة)',type:'number',value:30,min:0}
+    ]
+  }),
+  goal:()=>({
+    fields:[
+      {name:'title',label:'عنوان الهدف',required:true},
+      {name:'metric',label:'المقياس',type:'select',
+        options:[['questions','أسئلة'],['pages','صفحات'],['skills','مهارات'],
+                 ['cases','حالات'],['videos','فيديوهات']]},
+      {name:'target',label:'القيمة',type:'number',value:100,min:1,required:true},
+      {name:'period',label:'الفترة',type:'select',
+        options:[['daily','يومي'],['weekly','أسبوعي'],['monthly','شهري']]}
+    ]
+  })
+};
+
+/* ============================================================
+   ACTIONS
+============================================================ */
+document.addEventListener('click',e=>{
+  const navBtn=e.target.closest('[data-nav]');
+  if(navBtn){navigate(navBtn.dataset.nav);return}
+
+  const tabBtn=e.target.closest('[data-tab]');
+  if(tabBtn){
+    const g=tabBtn.dataset.tab,id=tabBtn.dataset.tabId;
+    if(g==='clinical')navigate('clinical',{tab:id});
+    else if(g==='study')navigate('study',{tab:id});
+    else if(g==='library')navigate('library',{filter:id});
+    return;
+  }
+
+  const btn=e.target.closest('[data-action]');
+  if(!btn)return;
+  const action=btn.dataset.action;
+  if(!Actions[action])return;
+  try{Actions[action](btn,e)}
+  catch(err){
+    console.error(err);
+    toast('حدث خطأ. بياناتك لم تُحذف.','error');
+  }
+});
+
+const Actions={
+  'toggle-theme'(){
+    const s=Store.get('settings');
+    s.theme=s.theme==='dark'?'light':'dark';
+    Store.save();
+    applyTheme();
+    render();
+  },
+  'set-theme'(btn){
+    Store.get('settings').theme=btn.dataset.val;
+    Store.save();
+    applyTheme();
+    render();
+    toast('تم تغيير المظهر','success');
+  },
+
+  /* ---- SKILLS ---- */
+  'add-skill'(){
+    openSheet({
+      title:'إضافة مهارة',
+      submitLabel:'إضافة',
+      bodyHTML:`
+        <label class="fld"><span>اختر من القائمة الجاهزة</span>
+          <select id="preset-select">
+            <option value="">— اختر —</option>
+            ${SKILL_PRESETS.map((p,i)=>`<option value="${i}">${esc(p[0])} (هدف ${p[2]})</option>`).join('')}
+            <option value="custom">✏️ مخصصة</option>
+          </select>
+        </label>
+        <div id="custom-fields" class="hidden">
+          <label class="fld"><span>اسم المهارة</span>
+            <input name="name" placeholder="مثال: IV Cannulation"></label>
+          <label class="fld"><span>التصنيف</span>
+            <select name="category">
+              ${['Procedures','Diagnostics','Emergency','Examination','Basic','Respiratory','Other']
+                .map(c=>`<option value="${c}">${c}</option>`).join('')}
+            </select></label>
+          <label class="fld"><span>الهدف (عدد المرات)</span>
+            <input type="number" name="target" value="50" min="1"></label>
+        </div>
+      `,
+      onSubmit(fd,form){
+        const sel=$('#preset-select',form);
+        if(sel.value==='custom'){
+          const name=(form.querySelector('[name=name]').value||'').trim();
+          if(!name){toast('أدخل اسم المهارة','error');return false}
+          if(Store.get('skills').some(s=>s.name===name)){
+            toast('المهارة موجودة','warn');return false;
+          }
+          Store.add('skills',{
+            name,
+            category:form.querySelector('[name=category]').value||'Other',
+            target:int(form.querySelector('[name=target]').value,50)
+          });
+          toast('تمت الإضافة','success');
+          render();return;
+        } else if(sel.value!==''){
+          const idx=int(sel.value,0);
+          const [name,category,target]=SKILL_PRESETS[idx];
+          if(Store.get('skills').some(s=>s.name===name)){
+            toast('المهارة موجودة','warn');return false;
+          }
+          Store.add('skills',{name,category,target});
+          toast('تمت الإضافة','success');
+          render();return;
+        } else {
+          toast('اختر مهارة','error');return false;
+        }
+      }
+    });
+    // تفعيل/تعطيل الحقول
+    setTimeout(()=>{
+      const sel=$('#preset-select');
+      const cf=$('#custom-fields');
+      if(sel&&cf){
+        sel.addEventListener('change',()=>{
+          cf.classList.toggle('hidden',sel.value!=='custom');
+        });
+      }
+    },50);
+  },
+  'delete-skill'(btn){
+    const id=btn.dataset.id;
+    if(!confirm('حذف المهارة وجميع سجلاتها؟'))return;
+    Store.get('skillSessions').filter(s=>s.skillId===id).forEach(s=>Store.remove('skillSessions',s.id));
+    Store.remove('skills',id);
+    toast('تم الحذف','success');
+    render();
+  },
+  'log-skill'(btn){
+    const skillId=btn.dataset.id;
+    const skill=Store.find('skills',skillId);
+    if(!skill)return;
+    openSheet({
+      title:`تسجيل: ${skill.name}`,
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.skillSession().fields),
+      onSubmit(fd){
+        const cnt=int(fd.count,1);
+        if(cnt<=0){toast('أدخل عددًا صحيحًا','error');return false}
+        Store.add('skillSessions',{
+          skillId,skillName:skill.name,
+          date:fd.date||todayISO(),
+          count:cnt,
+          setting:fd.setting||'Ward',
+          supervisor:fd.supervisor||'',
+          difficulty:fd.difficulty||'Moderate',
+          confidence:int(fd.confidence,3),
+          notes:fd.notes||''
+        });
+        toast(`تم تسجيل ${cnt}× ${skill.name}`,'success');
+        render();
+      }
+    });
+  },
+
+  /* ---- CASES ---- */
+  'add-case'(){
+    openSheet({
+      title:'إضافة حالة',
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.case().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('cases',{
+          title:fd.title.trim(),
+          specialty:fd.specialty||SPECIALTIES[0],
+          date:fd.date||todayISO(),
+          department:fd.department||'Ward',
+          ageGroup:fd.ageGroup||'Adult',
+          presentation:fd.presentation||'',
+          diagnosis:fd.diagnosis||'',
+          management:fd.management||'',
+          learned:fd.learned||'',
+          status:fd.status||'Observed',
+          confidence:int(fd.confidence,3)
+        });
+        toast('تم الحفظ','success');
+        render();
+      }
+    });
+  },
+  'delete-case'(btn){
+    if(!confirm('حذف هذه الحالة؟'))return;
+    Store.remove('cases',btn.dataset.id);
+    toast('تم الحذف','success');
+    render();
+  },
+
+  /* ---- PEARLS ---- */
+  'add-pearl'(){
+    openSheet({
+      title:'إضافة تركة',
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.pearl().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()||!fd.content?.trim()){
+          toast('أدخل العنوان والمحتوى','error');return false;
+        }
+        Store.add('pearls',{
+          title:fd.title.trim(),
+          category:fd.category||SPECIALTIES[0],
+          content:fd.content,
+          source:fd.source||'Consultant',
+          importance:fd.importance||'Medium',
+          date:fd.date||todayISO(),
+          favorite:fd.favorite==='yes'
+        });
+        toast('تم الحفظ','success');
+        render();
+      }
+    });
+  },
+  'delete-pearl'(btn){
+    if(!confirm('حذف؟'))return;
+    Store.remove('pearls',btn.dataset.id);
+    toast('تم الحذف','success');
+    render();
+  },
+
+  /* ---- COURSES/VIDEOS ---- */
+  'add-course'(){
+    openSheet({
+      title:'إضافة كورس',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.course().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل اسم الكورس','error');return false}
+        const total=int(fd.totalVideos,12);
+        const course=Store.add('courses',{
+          title:fd.title.trim(),
+          category:fd.category||'',
+          totalVideos:total
+        });
+        for(let i=1;i<=total;i++){
+          Store.add('videos',{
+            courseId:course.id,
+            title:`Video ${i}`,
+            duration:'',
+            status:'Not Started'
+          });
+        }
+        toast(`تم إنشاء الكورس مع ${total} فيديو`,'success');
+        render();
+      }
+    });
+  },
+  'add-video'(btn){
+    const courseId=btn.dataset.id;
+    openSheet({
+      title:'إضافة فيديو',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.video().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('videos',{
+          courseId,
+          title:fd.title.trim(),
+          duration:fd.duration?int(fd.duration,0):'',
+          status:fd.status||'Not Started'
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'toggle-video'(btn){
+    const id=btn.dataset.id;
+    const v=Store.find('videos',id);
+    if(!v)return;
+    const done=v.status==='Completed';
+    Store.update('videos',id,{
+      status:done?'Not Started':'Completed',
+      completedAt:done?null:new Date().toISOString()
+    });
+    toast(done?'أُلغي الإكمال':'تم الإكمال ✓','success');
+    render();
+  },
+  'delete-course'(btn){
+    if(!confirm('حذف الكورس وجميع فيديوهاته؟'))return;
+    const id=btn.dataset.id;
+    Store.get('videos').filter(v=>v.courseId===id).forEach(v=>Store.remove('videos',v.id));
+    Store.remove('courses',id);
+    toast('تم الحذف','success');
+    render();
+  },
+
+  /* ---- BOOKS ---- */
+  'add-book'(){
+    openSheet({
+      title:'إضافة كتاب',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.book().fields)+
+        `<label class="fld"><span>النوع</span>
+          <select name="type">
+            ${BOOK_TYPES.filter(t=>t!=='Reading').map(t=>`<option value="${t}">${t}</option>`).join('')}
+          </select></label>`,
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('books',{
+          title:fd.title.trim(),
+          author:fd.author||'',
+          type:fd.type||'Exam',
+          totalPages:int(fd.totalPages,500),
+          currentPage:int(fd.currentPage,0)
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'add-reading-book'(){
+    openSheet({
+      title:'إضافة كتاب قراءة',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.book().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('books',{
+          title:fd.title.trim(),
+          author:fd.author||'',
+          type:'Reading',
+          totalPages:int(fd.totalPages,500),
+          currentPage:int(fd.currentPage,0)
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'delete-book'(btn){
+    if(!confirm('حذف الكتاب وجلساته؟'))return;
+    const id=btn.dataset.id;
+    Store.get('readingSessions').filter(r=>r.bookId===id).forEach(r=>Store.remove('readingSessions',r.id));
+    Store.remove('books',id);
+    toast('تم الحذف','success');
+    render();
+  },
+  'log-reading'(btn){
+    const bookId=btn.dataset.id;
+    const book=Store.find('books',bookId);
+    if(!book)return;
+    openSheet({
+      title:`قراءة: ${book.title}`,
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.readingSession().fields,{
+        fromPage:book.currentPage||0,
+        toPage:book.currentPage||0
+      }),
+      onSubmit(fd){
+        const fromP=int(fd.fromPage,0);
+        const toP=int(fd.toPage,0);
+        const pages=Math.max(0,toP-fromP);
+        if(pages<=0){toast('تحقق من الصفحات','error');return false}
+        Store.add('readingSessions',{
+          bookId,bookName:book.title,
+          date:fd.date||todayISO(),
+          fromPage:fromP,toPage:toP,pages,
+          duration:int(fd.duration,0),
+          notes:fd.notes||''
+        });
+        if(toP>(book.currentPage||0)){
+          Store.update('books',bookId,{currentPage:toP});
+        }
+        toast(`تم تسجيل ${pages} صفحة`,'success');
+        render();
+      }
+    });
+  },
+
+  /* ---- QUESTION BANKS ---- */
+  'add-bank'(){
+    openSheet({
+      title:'إضافة بنك أسئلة',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.bank().fields),
+      onSubmit(fd){
+        if(!fd.name?.trim()){toast('أدخل الاسم','error');return false}
+        Store.add('questionBanks',{
+          name:fd.name.trim(),
+          type:fd.type||'QBank',
+          total:int(fd.total,1000),
+          completed:int(fd.completed,0)
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'delete-bank'(btn){
+    if(!confirm('حذف البنك؟'))return;
+    Store.remove('questionBanks',btn.dataset.id);
+    toast('تم الحذف','success');
+    render();
+  },
+  'log-questions'(){
+    const banks=Store.get('questionBanks');
+    openSheet({
+      title:'تسجيل جلسة أسئلة',
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.questionSession().fields),
+      onSubmit(fd){
+        const cnt=int(fd.count,0);
+        if(cnt<=0){toast('العدد يجب أن يكون > 0','error');return false}
+        const correct=clamp(int(fd.correct,0),0,cnt);
+        const bankName=fd.bankName||(banks[0]?.name||'');
+        Store.add('questionSessions',{
+          date:fd.date||todayISO(),
+          bankName,
+          topic:fd.topic||'General',
+          count:cnt,
+          correct,
+          duration:int(fd.duration,0),
+          notes:fd.notes||''
+        });
+        const bank=banks.find(b=>b.name===bankName);
+        if(bank)Store.update('questionBanks',bank.id,{completed:(bank.completed||0)+cnt});
+        const acc=Math.round((correct/cnt)*100);
+        toast(`تم تسجيل ${cnt} سؤال (دقة ${acc}%)`,'success');
+        render();
+      }
+    });
+  },
+
+  /* ---- RESEARCH ---- */
+  'add-research'(){
+    openSheet({
+      title:'إضافة مشروع',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.research().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('researchProjects',{
+          title:fd.title.trim(),
+          type:fd.type||RESEARCH_TYPES[0],
+          status:fd.status||RESEARCH_STATUS[0],
+          progress:clamp(int(fd.progress,0),0,100),
+          deadline:fd.deadline||'',
+          journal:fd.journal||'',
+          notes:fd.notes||'',
+          sessions:[]
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'update-research'(btn){
+    const id=btn.dataset.id;
+    const p=Store.find('researchProjects',id);
+    if(!p)return;
+    openSheet({
+      title:'تحديث المشروع',
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.research().fields,p),
+      onSubmit(fd){
+        Store.update('researchProjects',id,{
+          title:fd.title,
+          type:fd.type,
+          status:fd.status,
+          progress:clamp(int(fd.progress,0),0,100),
+          deadline:fd.deadline||'',
+          journal:fd.journal||'',
+          notes:fd.notes||''
+        });
+        toast('تم التحديث','success');
+        render();
+      }
+    });
+  },
+  'delete-research'(btn){
+    if(!confirm('حذف؟'))return;
+    Store.remove('researchProjects',btn.dataset.id);
+    toast('تم الحذف','success');
+    render();
+  },
+
+  /* ---- NOTES ---- */
+  'add-note'(){
+    openSheet({
+      title:'إضافة ملاحظة',
+      submitLabel:'حفظ',
+      bodyHTML:formHTML(FORMS.note().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()||!fd.content?.trim()){
+          toast('أدخل العنوان والمحتوى','error');return false;
+        }
+        Store.add('notes',{
+          title:fd.title.trim(),
+          specialty:fd.specialty||'General',
+          content:fd.content,
+          tags:(fd.tags||'').split(',').map(t=>t.trim()).filter(Boolean),
+          favorite:false
+        });
+        toast('تم الحفظ','success');
+        render();
+      }
+    });
+  },
+  'delete-note'(btn){
+    if(!confirm('حذف؟'))return;
+    Store.remove('notes',btn.dataset.id);
+    toast('تم الحذف','success');
+    render();
+  },
+  'toggle-fav-note'(btn){
+    const id=btn.dataset.id;
+    const n=Store.find('notes',id);
+    if(!n)return;
+    Store.update('notes',id,{favorite:!n.favorite});
+    render();
+  },
+
+  /* ---- TASKS ---- */
+  'quick-add'(btn){
+    const kind=btn.dataset.kind;
+    if(kind==='skill-session'){
+      const skills=Store.get('skills');
+      if(!skills.length){
+        toast('أضف مهارة أولاً','warn');
+        navigate('clinical',{tab:'skills'});
+        return;
+      }
+      openSheet({
+        title:'تسجيل مهارة سريعة',
+        submitLabel:'تسجيل',
+        bodyHTML:`
+          <label class="fld"><span>المهارة</span>
+            <select name="skillId">
+              ${skills.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('')}
+            </select></label>
+          <label class="fld"><span>عدد المرات</span>
+            <input type="number" name="count" value="1" min="1"></label>
+          <label class="fld"><span>التاريخ</span>
+            <input type="date" name="date" value="${todayISO()}"></label>
+          <label class="fld"><span>المكان</span>
+            <select name="setting">
+              ${SETTINGS_TYPES.map(s=>`<option value="${s}">${s}</option>`).join('')}
+            </select></label>
+        `,
+        onSubmit(fd){
+          const sk=Store.find('skills',fd.skillId);
+          if(!sk)return false;
+          const cnt=int(fd.count,1);
+          Store.add('skillSessions',{
+            skillId:sk.id,skillName:sk.name,
+            date:fd.date||todayISO(),
+            count:cnt,setting:fd.setting||'Ward',
+            difficulty:'Moderate',confidence:3,notes:''
+          });
+          toast(`تم تسجيل ${cnt}× ${sk.name}`,'success');
+          render();
+        }
+      });
+    }
+    else if(kind==='case')Actions['add-case']();
+    else if(kind==='questions'){
+      if(!Store.get('questionBanks').length){
+        toast('أضف بنك أسئلة أولاً','warn');
+        navigate('study',{tab:'questions'});
+        return;
+      }
+      Actions['log-questions']();
+    }
+    else if(kind==='reading'){
+      const books=Store.get('books');
+      if(!books.length){
+        toast('أضف كتابًا أولاً','warn');
+        navigate('reading');
+        return;
+      }
+      openSheet({
+        title:'تسجيل قراءة',
+        submitLabel:'حفظ',
+        bodyHTML:`
+          <label class="fld"><span>الكتاب</span>
+            <select name="bookId">
+              ${books.map(b=>`<option value="${b.id}">${esc(b.title)}</option>`).join('')}
+            </select></label>
+          ${formHTML(FORMS.readingSession().fields)}
+        `,
+        onSubmit(fd){
+          const b=Store.find('books',fd.bookId);
+          if(!b)return false;
+          const pages=Math.max(0,int(fd.toPage,0)-int(fd.fromPage,0));
+          if(pages<=0){toast('تحقق من الصفحات','error');return false}
+          Store.add('readingSessions',{
+            bookId:b.id,bookName:b.title,
+            date:fd.date||todayISO(),
+            fromPage:int(fd.fromPage,0),toPage:int(fd.toPage,0),
+            pages,duration:int(fd.duration,0),notes:fd.notes||''
+          });
+          if(int(fd.toPage,0)>(b.currentPage||0))
+            Store.update('books',b.id,{currentPage:int(fd.toPage,0)});
+          toast(`تم تسجيل ${pages} صفحة`,'success');
+          render();
+        }
+      });
+    }
+    else if(kind==='video'){
+      const videos=Store.get('videos').filter(v=>v.status!=='Completed');
+      if(!videos.length){
+        toast('لا فيديوهات متبقية','warn');
+        navigate('study',{tab:'courses'});
+        return;
+      }
+      openSheet({
+        title:'اختر فيديو',
+        submitLabel:'إنهاء',
+        bodyHTML:`
+          <label class="fld"><span>الفيديو</span>
+            <select name="vid">
+              ${videos.map(v=>`<option value="${v.id}">${esc(v.title)}</option>`).join('')}
+            </select></label>
+        `,
+        onSubmit(fd){
+          Store.update('videos',fd.vid,{status:'Completed',completedAt:new Date().toISOString()});
+          toast('أُكمل ✓','success');
+          render();
+        }
+      });
+    }
+    else if(kind==='pearl')Actions['add-pearl']();
+    else if(kind==='note')Actions['add-note']();
+    else if(kind==='task')Actions['add-task']();
+  },
+  'add-task'(){
+    openSheet({
+      title:'إضافة مهمة',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.task().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('tasks',{
+          title:fd.title.trim(),
+          date:fd.date||todayISO(),
+          category:fd.category||'Study',
+          priority:fd.priority||'Medium',
+          estMin:int(fd.estMin,0),
+          done:false
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'toggle-task'(checkbox){
+    const id=checkbox.dataset.id;
+    const t=Store.find('tasks',id);
+    if(!t)return;
+    Store.update('tasks',id,{done:!t.done});
+    render();
+  },
+  'delete-task'(btn){
+    Store.remove('tasks',btn.dataset.id);
+    render();
+  },
+
+  /* ---- GOALS ---- */
+  'add-goal'(){
+    openSheet({
+      title:'إضافة هدف',
+      submitLabel:'إضافة',
+      bodyHTML:formHTML(FORMS.goal().fields),
+      onSubmit(fd){
+        if(!fd.title?.trim()){toast('أدخل العنوان','error');return false}
+        Store.add('goals',{
+          title:fd.title.trim(),
+          metric:fd.metric||'questions',
+          target:int(fd.target,100),
+          period:fd.period||'monthly'
+        });
+        toast('تمت الإضافة','success');
+        render();
+      }
+    });
+  },
+  'delete-goal'(btn){
+    Store.remove('goals',btn.dataset.id);
+    render();
+  },
+  'edit-targets'(){
+    const t=Store.get('settings').targets;
+    openSheet({
+      title:'تعديل الأهداف اليومية',
+      submitLabel:'حفظ',
+      bodyHTML:`
+        <label class="fld"><span>أسئلة/يوم</span>
+          <input type="number" name="questions" value="${t.questions}" min="0"></label>
+        <label class="fld"><span>صفحات/يوم</span>
+          <input type="number" name="pages" value="${t.pages}" min="0"></label>
+        <label class="fld"><span>فيديو/يوم</span>
+          <input type="number" name="videos" value="${t.videos}" min="0"></label>
+        <label class="fld"><span>مهارات/يوم</span>
+          <input type="number" name="clinical" value="${t.clinical}" min="0"></label>
+      `,
+      onSubmit(fd){
+        const s=Store.get('settings');
+        s.targets={
+          ...s.targets,
+          questions:int(fd.questions,50),
+          pages:int(fd.pages,20),
+          videos:int(fd.videos,1),
+          clinical:int(fd.clinical,1)
+        };
+        Store.save();
+        toast('تم الحفظ','success');
+        render();
+      }
+    });
+  },
+
+  /* ---- SETTINGS ---- */
+  'save-profile'(){
+    const s=Store.get('settings');
+    s.profile={
+      name:$('#set-name').value.trim(),
+      targetExam:$('#set-exam').value.trim()
+    };
+    Store.save();
+    toast('تم الحفظ','success');
+    render();
+  },
+  'save-targets'(){
+    const s=Store.get('settings');
+    s.targets={
+      ...s.targets,
+      questions:int($('#tg-q').value,50),
+      pages:int($('#tg-p').value,20),
+      clinical:int($('#tg-s').value,1),
+      videos:int($('#tg-v').value,1),
+      studyMinutes:int($('#tg-sm').value,120),
+      researchMinutes:int($('#tg-rm').value,30)
+    };
+    Store.save();
+    toast('تم الحفظ','success');
+    render();
+  },
+  'save-weights'(){
+    const s=Store.get('settings');
+    s.weights={
+      clinical:int($('#w-c').value,30),
+      study:int($('#w-s').value,25),
+      questions:int($('#w-q').value,20),
+      reading:int($('#w-r').value,15),
+      research:int($('#w-rs').value,10)
+    };
+    Store.save();
+    toast('تم الحفظ','success');
+    render();
+  },
+
+  /* ---- REPORTS ---- */
+  'report-preview'(btn){
+    const range=btn.dataset.range;
+    if(range==='custom'){
+      openSheet({
+        title:'تقرير مخصص',
+        submitLabel:'عرض',
+        bodyHTML:`
+          <label class="fld"><span>من</span>
+            <input type="date" name="start" value="${startOfMonth()}"></label>
+          <label class="fld"><span>إلى</span>
+            <input type="date" name="end" value="${todayISO()}"></label>
+        `,
+        onSubmit(fd){
+          if(fd.start>fd.end){toast('تاريخ غير صحيح','error');return false}
+          showReportPreview(fd.start,fd.end);
+        }
+      });
+    } else {
+      let start,end,label;
+      if(range==='day'){start=end=todayISO();label='تقرير اليوم'}
+      else if(range==='week'){start=startOfWeek();end=endOfWeek();label='تقرير الأسبوع'}
+      else {start=startOfMonth();end=endOfMonth();label='تقرير الشهر'}
+      showReportPreview(start,end,label);
+    }
+  },
+  'export-json'(){
+    const data=JSON.stringify({app:'Medical OS',version:'1.0',schemaVersion:2,exportedAt:new Date().toISOString(),data:Store.data},null,2);
+    download(`medical-os-backup-${todayISO()}.json`,data,'application/json');
+    toast('تم التنزيل','success');
+  },
+  'export-csv'(){
+    const qSessions=Store.get('questionSessions');
+    const rows=qSessions.map(r=>({
+      date:r.date,bank:r.bankName||'',topic:r.topic||'',
+      count:r.count,correct:r.correct||0,
+      accuracy:r.count?Math.round((r.correct/r.count)*100):0
+    }));
+    let csv='date,bank,topic,count,correct,accuracy\n';
+    rows.forEach(r=>{
+      csv+=`${r.date},${JSON.stringify(r.bank)},${JSON.stringify(r.topic)},${r.count},${r.correct},${r.accuracy}\n`;
+    });
+    download(`medical-os-questions-${todayISO()}.csv`,'\uFEFF'+csv,'text/csv');
+    toast('تم تصدير CSV','success');
+  },
+  'export-pdf'(){
+    openSheet({
+      title:'تصدير PDF',
+      submitLabel:'فتح نافذة الطباعة',
+      bodyHTML:`
+        <p class="small muted mb-12">سيتم فتح نافذة طباعة. اختر "Save as PDF".</p>
+        <label class="fld"><span>من</span>
+          <input type="date" name="start" value="${startOfMonth()}"></label>
+        <label class="fld"><span>إلى</span>
+          <input type="date" name="end" value="${todayISO()}"></label>
+      `,
+      onSubmit(fd){
+        if(fd.start>fd.end){toast('تاريخ غير صحيح','error');return false}
+        printReport(fd.start,fd.end);
+      }
+    });
+  },
+  'import-json'(){
+    const input=document.createElement('input');
+    input.type='file';
+    input.accept='.json,application/json';
+    input.onchange=async()=>{
+      const file=input.files?.[0];
+      if(!file)return;
+      try{
+        const text=await file.text();
+        const obj=JSON.parse(text);
+        const backup=obj?.data&&obj.app==='Medical OS'?obj.data:obj;
+        if(!backup||typeof backup!=='object'||!backup.settings){
+          toast('ملف غير صالح','error');return;
+        }
+        const count=Store.collections.reduce((n,c)=>n+(Array.isArray(backup[c])?backup[c].length:0),0);
+        const choice=prompt(`هذه النسخة تحتوي على ${count} سجلًا. اكتب Replace للاستبدال أو Merge للدمج.`);
+        if(!choice)return;
+        const def=Store.defaults(); const incoming={...def,...backup,settings:{...def.settings,...(backup.settings||{})}};
+        Store.collections.forEach(c=>{if(!Array.isArray(incoming[c]))incoming[c]=[]});
+        if(choice.toLowerCase()==='merge'){
+          Store.collections.forEach(c=>{const map=new Map(Store.data[c].map(x=>[x.id,x])); incoming[c].forEach(x=>{const old=map.get(x.id);if(!old||String(x.updatedAt||'')>String(old.updatedAt||''))map.set(x.id,x)});Store.data[c]=[...map.values()]});
+          Store.data.settings={...Store.data.settings,...incoming.settings};
+        }else if(choice.toLowerCase()==='replace') Store.data=incoming;
+        else {toast('اختر Replace أو Merge','warn');return}
+        await Store.persistAll(); Store.lastSave=new Date().toISOString();
+        applyTheme();
+        toast('تم الاستيراد','success');
+        render();
+      }catch(err){
+        console.error(err);
+        toast('فشل قراءة الملف','error');
+      }
+    };
+    input.click();
+  },
+  'load-demo'(){
+    if(!confirm('استبدال البيانات ببيانات تجريبية؟'))return;
+    loadDemoData();
+    applyTheme();
+    toast('تم تحميل البيانات','success');
+    render();
+  },
+  'reset-all'(){
+    openSheet({
+      title:'تأكيد الحذف',
+      submitLabel:'تأكيد الحذف',
+      bodyHTML:`
+        <div class="insight" style="border-color:var(--danger)">
+          <div class="ic">⚠️</div>
+          <p><b>سيتم حذف جميع البيانات نهائيًا.</b></p>
+        </div>
+        <button type="button" class="btn btn-outline btn-block mt-12" data-action="export-json" data-sheet-close>
+          📦 تنزيل نسخة احتياطية
+        </button>
+      `,
+      onSubmit(){
+        Store.data=Store.defaults();
+        Store.persistAll();
+        applyTheme();
+        toast('تم الحذف','success');
+        render();
+      }
+    });
+  },
+  /* welcome */
+  'welcome-empty'(){
+    closeSheet();
+    toast('ابدأ رحلتك 🚀','success');
+  },
+  'welcome-demo'(){
+    closeSheet();
+    loadDemoData();
+    applyTheme();
+    toast('تم تحميل البيانات','success');
+    navigate('dashboard');
+  }
+};
+
+/* ============================================================
+   REPORT PREVIEW & PRINT
+============================================================ */
+function showReportPreview(start,end,label='تقرير'){
+  const q=Calc.questionsIn(start,end);
+  const pages=Calc.pagesIn(start,end);
+  const skills=Calc.skillAttemptsIn(start,end);
+  const cases=Calc.casesIn(start,end);
+  const videos=Calc.videosIn(start,end);
+  openSheet({
+    title:`${label} · ${fmtDate(start)} → ${fmtDate(end)}`,
+    hideSubmit:true,
+    bodyHTML:`
+      <div class="grid grid-2">
+        <div class="stat"><span class="label">أسئلة</span><span class="value">${q.total}</span>
+          <span class="sub">دقة ${q.accuracy}%</span></div>
+        <div class="stat"><span class="label">صفحات</span><span class="value">${pages}</span></div>
+        <div class="stat"><span class="label">مهارات</span><span class="value">${skills}</span></div>
+        <div class="stat"><span class="label">حالات</span><span class="value">${cases.length}</span></div>
+        <div class="stat"><span class="label">فيديوهات</span><span class="value">${videos}</span></div>
+      </div>
+    `
+  });
+}
+
+function printReport(start,end){
+  const q=Calc.questionsIn(start,end);
+  const pages=Calc.pagesIn(start,end);
+  const skills=Calc.skillAttemptsIn(start,end);
+  const cases=Calc.casesIn(start,end);
+  const videos=Calc.videosIn(start,end);
+  const streak=Calc.streak();
+  const ps=Calc.progressScore();
+  const name=Store.get('settings').profile?.name||'Doctor';
+
+  const w=window.open('','_blank');
+  if(!w){toast('اسمح بالنوافذ المنبثقة','error');return}
+
+  const html=`
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8">
+<title>MEDICAL OS Report</title>
+<style>
+body{font-family:"Segoe UI",Tahoma,sans-serif;padding:26px;color:#0F172A;background:#fff}
+h1{color:#0F4C81;border-bottom:3px solid #0F4C81;padding-bottom:8px;margin-bottom:16px}
+h2{color:#0F4C81;margin-top:20px;border-bottom:1px solid #ddd;padding-bottom:5px;font-size:16px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.stat{flex:1;min-width:130px;padding:10px;border:1px solid #E2E8F0;border-radius:10px;background:#F7F9FC}
+.stat .lbl{font-size:11px;color:#64748B}
+.stat .val{font-size:22px;font-weight:800;color:#0F4C81;margin-top:3px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #E2E8F0;padding:6px;text-align:right;font-size:12px}
+th{background:#0F4C81;color:#fff}
+.muted{color:#64748B;font-size:12px}
+.footer{margin-top:30px;padding-top:12px;border-top:1px solid #E2E8F0;color:#64748B;font-size:11px}
+@media print{@page{margin:1.5cm}}
+</style></head><body>
+<h1>MEDICAL PROGRESS REPORT</h1>
+<div class="muted"><b>${esc(name)}</b> — ${fmtDate(start)} إلى ${fmtDate(end)}<br>
+Generated: ${new Date().toLocaleString('ar-EG')}</div>
+<h2>Summary</h2>
+<div class="row">
+  <div class="stat"><div class="lbl">Progress Score</div><div class="val">${ps.score}/100</div></div>
+  <div class="stat"><div class="lbl">Best Streak</div><div class="val">${streak.best} 🔥</div></div>
+  <div class="stat"><div class="lbl">Questions</div><div class="val">${q.total}</div></div>
+  <div class="stat"><div class="lbl">Accuracy</div><div class="val">${q.accuracy}%</div></div>
+</div>
+<h2>Clinical</h2>
+<div class="row">
+  <div class="stat"><div class="lbl">Skills</div><div class="val">${skills}</div></div>
+  <div class="stat"><div class="lbl">Cases</div><div class="val">${cases.length}</div></div>
+</div>
+${cases.length?`<table>
+  <tr><th>Date</th><th>Case</th><th>Specialty</th><th>Status</th></tr>
+  ${cases.slice(0,30).map(c=>`<tr>
+    <td>${fmtDateShort(c.date)}</td>
+    <td>${esc(c.title)}</td>
+    <td>${esc(c.specialty)}</td>
+    <td>${esc(c.status||'')}</td>
+  </tr>`).join('')}
+</table>`:''}
+<h2>Study & Reading</h2>
+<div class="row">
+  <div class="stat"><div class="lbl">Questions</div><div class="val">${q.total}</div></div>
+  <div class="stat"><div class="lbl">Correct</div><div class="val">${q.correct}</div></div>
+  <div class="stat"><div class="lbl">Pages</div><div class="val">${pages}</div></div>
+  <div class="stat"><div class="lbl">Videos</div><div class="val">${videos}</div></div>
+</div>
+<div class="footer">
+This application is a personal educational and clinical training tracker.
+It is not a substitute for clinical guidelines, supervision, or professional medical judgment.
+</div>
+<script>setTimeout(function(){window.print()},400)<\/script>
+</body></html>`;
+  w.document.write(html);
+  w.document.close();
+}
+
+/* ============================================================
+   DEMO DATA
+============================================================ */
+function loadDemoData(){
+  const fresh=Store.defaults();
+  fresh.settings.profile={name:'Dr. Ahmed',targetExam:'MRCP'};
+  Store.data=fresh;
+
+  const today=todayISO();
+  const daysAgo=n=>addDays(today,-n);
+
+  // Skills
+  const skillNames=['IV Cannulation','ECG','Venipuncture','ABG Sampling','Suturing',
+    'Foley Catheter','Blood Sampling','History Taking','CVS Examination','CPR'];
+  const skills=skillNames.map((name,i)=>({
+    id:uid(),name,
+    category:i<5?'Procedures':'Examination',
+    target:[50,50,50,30,40,25,50,50,40,10][i],
+    createdAt:new Date().toISOString()
+  }));
+  Store.data.skills=skills;
+
+  // Skill sessions
+  const skillSessions=[];
+  for(let d=0;d<10;d++){
+    const day=daysAgo(d);
+    const n=1+Math.floor(Math.random()*3);
+    for(let k=0;k<n;k++){
+      const s=skills[Math.floor(Math.random()*skills.length)];
+      skillSessions.push({
+        id:uid(),
+        skillId:s.id,skillName:s.name,
+        date:day,
+        count:1+Math.floor(Math.random()*3),
+        setting:['ER','Ward','ICU','OPD'][Math.floor(Math.random()*4)],
+        difficulty:'Moderate',
+        confidence:3+Math.floor(Math.random()*3),
+        createdAt:new Date().toISOString()
+      });
+    }
+  }
+  Store.data.skillSessions=skillSessions;
+
+  // Cases
+  const caseData=[
+    ['Acute MI','Cardiology','ER'],
+    ['Community Acquired Pneumonia','Respiratory','Ward'],
+    ['Diabetic Ketoacidosis','Endocrinology','ICU'],
+    ['Ischemic Stroke','Neurology','ER'],
+    ['Acute Appendicitis','Surgery','OR']
+  ];
+  Store.data.cases=caseData.map(([title,specialty,dept],i)=>({
+    id:uid(),title,specialty,
+    date:daysAgo(i*2),
+    department:dept,ageGroup:'Adult',
+    presentation:'...',diagnosis:'...',management:'...',learned:'...',
+    status:'Observed',confidence:3,
+    createdAt:new Date().toISOString()
+  }));
+
+  // Pearls
+  Store.data.pearls=[
+    {id:uid(),title:"Don't miss posterior MI",category:'Cardiology',
+      content:'Always check posterior leads in suspected posterior MI.',
+      source:'Consultant',importance:'High',date:daysAgo(3),
+      favorite:true,createdAt:new Date().toISOString()},
+    {id:uid(),title:'ABG quick interpretation',category:'Respiratory',
+      content:'Look at pH → PaCO2 → HCO3 to determine primary disorder.',
+      source:'Book',importance:'Medium',date:daysAgo(5),
+      favorite:false,createdAt:new Date().toISOString()}
+  ];
+
+  // Course + Videos
+  const courseId=uid();
+  Store.data.courses=[{id:courseId,title:'MRCP Part 1 Course',category:'MRCP',
+    totalVideos:12,createdAt:new Date().toISOString()}];
+  Store.data.videos=Array.from({length:12},(_,i)=>({
+    id:uid(),courseId,title:`Video ${i+1}`,
+    duration:30+Math.floor(Math.random()*30),
+    status:i<5?'Completed':'Not Started',
+    completedAt:i<5?new Date(Date.now()-i*86400000).toISOString():null,
+    createdAt:new Date().toISOString()
+  }));
+
+  // Books
+  Store.data.books=[
+    {id:uid(),title:'MRCP Part 1 Book',author:'Various',type:'Exam',
+      totalPages:800,currentPage:235,createdAt:new Date().toISOString()},
+    {id:uid(),title:'Oxford Handbook of Clinical Medicine',author:'Oxford',
+      type:'Reading',totalPages:1000,currentPage:420,createdAt:new Date().toISOString()}
+  ];
+
+  // Reading sessions
+  Store.data.readingSessions=Array.from({length:8},(_,i)=>({
+    id:uid(),
+    bookId:Store.data.books[i%2].id,
+    bookName:Store.data.books[i%2].title,
+    date:daysAgo(i),
+    fromPage:i*15,toPage:i*15+15,pages:15,
+    duration:35,notes:'',createdAt:new Date().toISOString()
+  }));
+
+  // Question bank
+  Store.data.questionBanks=[{
+    id:uid(),name:'PassMedicine',type:'QBank',
+    total:5000,completed:1270,createdAt:new Date().toISOString()
+  }];
+
+  // Question sessions
+  const topics=['Cardiology','Respiratory','Neurology','Endocrinology','Gastroenterology'];
+  Store.data.questionSessions=Array.from({length:14},(_,i)=>{
+    const count=20+Math.floor(Math.random()*40);
+    const correct=Math.floor(count*(0.55+Math.random()*0.35));
+    return{
+      id:uid(),date:daysAgo(i),
+      bankName:'PassMedicine',
+      topic:topics[i%topics.length],
+      count,correct,
+      duration:40+Math.floor(Math.random()*30),
+      createdAt:new Date().toISOString()
+    };
+  });
+
+  // Notes
+  Store.data.notes=[
+    {id:uid(),title:'ECG basics',specialty:'Cardiology',
+      content:'Rate, Rhythm, Axis, Intervals, Morphology...',
+      tags:['ECG','basics'],favorite:true,createdAt:new Date().toISOString()},
+    {id:uid(),title:'Sepsis 6',specialty:'Emergency Medicine',
+      content:'O2, cultures, IV antibiotics, IV fluids, lactate, urine output.',
+      tags:['sepsis','emergency'],favorite:false,createdAt:new Date().toISOString()}
+  ];
+
+  // Tasks
+  Store.data.tasks=[
+    {id:uid(),title:'Cardiology revision',date:today,category:'Study',
+      priority:'High',estMin:60,done:true,createdAt:new Date().toISOString()},
+    {id:uid(),title:'50 questions',date:today,category:'Qbank',
+      priority:'High',estMin:45,done:false,createdAt:new Date().toISOString()},
+    {id:uid(),title:'Read 20 pages',date:today,category:'Reading',
+      priority:'Medium',estMin:30,done:false,createdAt:new Date().toISOString()}
+  ];
+
+  // Goals
+  Store.data.goals=[
+    {id:uid(),title:'1000 questions this month',metric:'questions',
+      target:1000,period:'monthly',createdAt:new Date().toISOString()},
+    {id:uid(),title:'500 pages this month',metric:'pages',
+      target:500,period:'monthly',createdAt:new Date().toISOString()}
+  ];
+
+  // Research
+  Store.data.researchProjects=[{
+    id:uid(),title:'Review of Sepsis biomarkers',type:'Systematic Review',
+    status:'Writing',progress:65,deadline:addDays(today,30),
+    journal:'',notes:'',sessions:[],
+    createdAt:new Date().toISOString()
+  }];
+
+  Store.save();
+}
+
+/* ============================================================
+   THEME
+============================================================ */
+function applyTheme(){
+  const s=Store.get('settings');
+  document.documentElement.dataset.theme=s.theme||'light';
+  const meta=document.querySelector('meta[name=theme-color]');
+  if(meta)meta.content=s.theme==='dark'?'#0B1220':'#0F4C81';
+}
+
+/* ============================================================
+   FAB
+============================================================ */
+$('#fab').addEventListener('click',()=>{
+  openSheet({
+    title:'إضافة سريعة',
+    hideSubmit:true,
+    bodyHTML:`
+      <div class="qa-grid">
+        <button type="button" class="qa" data-action="quick-add" data-kind="skill-session" data-sheet-close><div class="qa-ic">💉</div><span>مهارة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="case" data-sheet-close><div class="qa-ic">🩺</div><span>حالة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="questions" data-sheet-close><div class="qa-ic">❓</div><span>أسئلة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="reading" data-sheet-close><div class="qa-ic">📖</div><span>قراءة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="video" data-sheet-close><div class="qa-ic">🎬</div><span>فيديو</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="pearl" data-sheet-close><div class="qa-ic">💎</div><span>تركة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="note" data-sheet-close><div class="qa-ic">📝</div><span>ملاحظة</span></button>
+        <button type="button" class="qa" data-action="quick-add" data-kind="task" data-sheet-close><div class="qa-ic">✅</div><span>مهمة</span></button>
+      </div>
+    `
+  });
+});
+
+/* ============================================================
+   FIRST-RUN WELCOME
+============================================================ */
+function showWelcome(){
+  openSheet({
+    title:'مرحبًا بك في MEDICAL OS',
+    hideSubmit:true,
+    bodyHTML:`
+      <div style="text-align:center;padding:6px 0 16px">
+        <div style="width:60px;height:60px;border-radius:16px;margin:0 auto 10px;
+          background:linear-gradient(135deg,var(--primary),var(--secondary));
+          display:grid;place-items:center;color:#fff;font-size:26px;font-weight:800">M</div>
+        <h3 style="font-size:15px;margin-bottom:5px">Medical Command Center</h3>
+        <p class="small muted">تطبيقك الشخصي لإدارة التدريب السريري والدراسة.</p>
+      </div>
+      <div class="insight mb-12">
+        <div class="ic">🔒</div>
+        <p class="small">بياناتك محفوظة محليًا على هذا الجهاز فقط.</p>
+      </div>
+      <div class="grid grid-2">
+        <button type="button" class="btn btn-primary btn-block" data-action="welcome-empty" data-sheet-close>ابدأ من الصفر</button>
+        <button type="button" class="btn btn-soft btn-block" data-action="welcome-demo" data-sheet-close>🎬 بيانات تجريبية</button>
+      </div>
+    `
+  });
+}
+
+/* ============================================================
+   BOOT
+============================================================ */
+(async function boot(){
+  await Store.load();
+  applyTheme();
+
+  const isFirst=!Store.collections.some(c=>Store.get(c).length);
+  render();
+  $('#loading').hidden=true;
+  if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('Offline setup failed',e));
+  if(isFirst)setTimeout(showWelcome,300);
+  else setTimeout(()=>toast('MEDICAL OS جاهز ⚕️'),500);
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')closeSheet();
+  });
+})();
+</script>
+</body>
+</html>
