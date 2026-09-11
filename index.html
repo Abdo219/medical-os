@@ -3092,12 +3092,19 @@ function showWelcome(){
    BOOT
 ============================================================ */
 (async function boot(){
-  await Store.load();
+  try{
+    await Promise.race([
+      Store.load(),
+      new Promise(resolve=>setTimeout(()=>{if(!Store.data)Store.data=Store.defaults();resolve()},2500))
+    ]);
+  }catch(e){
+    console.warn('Database startup fallback',e);
+    if(!Store.data)Store.data=Store.defaults();
+  }
   applyTheme();
-
   const isFirst=!Store.collections.some(c=>Store.get(c).length);
   render();
-  $('#loading').hidden=true;
+  const loading=$('#loading'); if(loading)loading.hidden=true;
   if('serviceWorker' in navigator) navigator.serviceWorker.register('./service-worker.js').catch(e=>console.warn('Offline setup failed',e));
   if(isFirst)setTimeout(showWelcome,300);
   else setTimeout(()=>toast('MEDICAL OS جاهز ⚕️'),500);
